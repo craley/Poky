@@ -4,6 +4,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "imgui.h"
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
@@ -28,7 +30,7 @@ int main()
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer == nullptr) {
 		SDL_DestroyWindow(window);
 		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -63,8 +65,10 @@ int main()
 		return 1;
 	}
 
-	const SDL_Color white = {255, 255, 255};
-	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Hello World!", white);
+	//const SDL_Color white = {255, 255, 255};
+	const SDL_Color black = {0, 0, 0};
+
+	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Hello World!", black);
 	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 	SDL_FreeSurface(textSurface);
 
@@ -78,6 +82,8 @@ int main()
 
 	unsigned long timeElapsed = SDL_GetTicks();
 
+	ui::Context con;
+
 	while (!sdlQuit) {
 		timeElapsed = SDL_GetTicks();
 
@@ -87,6 +93,19 @@ int main()
 				case SDL_QUIT:
 					sdlQuit = true;
 					break;
+				case SDL_MOUSEMOTION:
+					con.mouseX = sdlEvent.motion.x;
+					con.mouseY = sdlEvent.motion.y;
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+					if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
+						con.mouseDown = true;
+					}
+					break;
+				case SDL_MOUSEBUTTONUP:
+					if (sdlEvent.button.button == SDL_BUTTON_LEFT)
+						con.mouseDown = false;
+					break;
 			}
 		}
 
@@ -95,6 +114,9 @@ int main()
 		// Draw calls
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, dexTexture, nullptr, nullptr);
+		if (ui::doButton(0, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
+			std::cout << "pressed button" << std::endl;
+		}
 		SDL_RenderCopy(renderer, textTexture, nullptr, &textDest);
 		SDL_RenderPresent(renderer);
 	}
