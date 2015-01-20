@@ -11,7 +11,7 @@ int main()
 		return 1;
 	}
 
-    if (IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF) == -1) {
+	if (IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF) == -1) {
 		std::cerr << "IMG_Init Error: " << IMG_GetError() << std::endl;
 		return 1;
 	}
@@ -76,15 +76,15 @@ int main()
 	SDL_Event sdlEvent;
 	bool sdlQuit = false;
 
-    unsigned long timeElapsed = SDL_GetTicks();
+	unsigned long timeElapsed = SDL_GetTicks();
 
-    while (!sdlQuit) {
+	while (!sdlQuit) {
 		timeElapsed = SDL_GetTicks();
 
 		// Poll for events
-        while(SDL_PollEvent(&sdlEvent)) {
-            switch(sdlEvent.type) {
-                case SDL_QUIT:
+		while(SDL_PollEvent(&sdlEvent)) {
+			switch(sdlEvent.type) {
+				case SDL_QUIT:
 					sdlQuit = true;
 					break;
 			}
