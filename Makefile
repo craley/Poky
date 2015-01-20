@@ -2,7 +2,7 @@ CC      = g++
 SRC     = $(wildcard *.cpp) $(wildcard src/*/*.cpp)
 OBJ     = $(addprefix obj/,$(notdir $(SRC:.cpp=.o)))  
 DEPS    = $(SRC:%.cpp=obj/%.d)
-CFLAGS  = -std=c++14 -Wall -fPIC -g
+CFLAGS  = -std=c++1y -Wall -fPIC -g
 LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -L/usr/local/lib
 
 EXE = pokedex
