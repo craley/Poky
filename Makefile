@@ -22,7 +22,7 @@ obj/sqlite/sqlite3.o: $(SQLITE_C) | obj/sqlite
 obj/%.o: %.cpp | obj
 	$(CC) -MMD -MP -c $< $(CFLAGS) -o $@ 
 
-obj/sqlite: obj
+obj/sqlite:
 	mkdir obj/sqlite
 
 obj:
