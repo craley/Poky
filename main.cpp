@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "imgui.h"
+#include "sqlite/sqlite3.h"
 
 int main()
 {
