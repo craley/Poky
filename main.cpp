@@ -7,6 +7,9 @@
 #include "imgui.h"
 #include "sqlite/sqlite3.h"
 
+const int WINDOW_WIDTH = 640;
+const int WINDOW_HEIGHT = 480;
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
@@ -24,7 +27,7 @@ int main()
 		return 1;
 	}
 
-	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 	if (window == nullptr) {
 		std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
@@ -75,8 +78,9 @@ int main()
 
 	int textWidth, textHeight;
 	SDL_QueryTexture(textTexture, nullptr, nullptr, &textWidth, &textHeight);
-	int initialHeight = 10;
-	SDL_Rect textDest = {0, initialHeight, textWidth, textHeight};
+	textWidth *= 2; textHeight *=2;
+	int initialHeight = WINDOW_HEIGHT/2 - textHeight;
+	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth/2, initialHeight, textWidth, textHeight};
 
 	SDL_Event sdlEvent;
 	bool sdlQuit = false;
@@ -114,10 +118,14 @@ int main()
 
 		// Draw calls
 		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, dexTexture, nullptr, nullptr);
-		if (ui::doButton(0, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
+		//SDL_RenderCopy(renderer, dexTexture, nullptr, nullptr);
+
+		con.begin();
+		if (con.button(1, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
 			std::cout << "pressed button" << std::endl;
 		}
+		con.end();
+
 		SDL_RenderCopy(renderer, textTexture, nullptr, &textDest);
 		SDL_RenderPresent(renderer);
 	}
