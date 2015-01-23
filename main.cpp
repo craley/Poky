@@ -34,7 +34,7 @@ int main()
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr) {
 		SDL_DestroyWindow(window);
 		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;

@@ -62,6 +62,7 @@ namespace ui {
 		if (hotItem == id && activeItem == id && !mouseDown) {
 			return true;
 		}
+
 		return false;
 	}
 } // namespace ui

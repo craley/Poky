@@ -3,12 +3,11 @@
 namespace ui {
 	class Context {
     public:
-        int mouseX;
-        int mouseY;
-        int hotItem;
-        int activeItem;
-        bool mouseDown;
-
+        int mouseX = 0;
+        int mouseY = 0;
+        int hotItem = -1;
+        int activeItem = -1;
+        bool mouseDown = false;
 
         void begin();
         void end();
