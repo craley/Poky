@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "imgui.h"
 #include "sqlite/sqlite3.h"
@@ -10,7 +10,7 @@
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
 
-int main()
+int main(int, char**)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
 		std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
