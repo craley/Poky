@@ -1,12 +1,16 @@
 #include <iostream>
 #include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "imgui.h"
+#include "sqlite/sqlite3.h"
 
-int main()
+const int WINDOW_WIDTH = 640;
+const int WINDOW_HEIGHT = 480;
+
+int main(int, char**)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
 		std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -23,14 +27,14 @@ int main()
 		return 1;
 	}
 
-	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 	if (window == nullptr) {
 		std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr) {
 		SDL_DestroyWindow(window);
 		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -68,14 +72,23 @@ int main()
 	//const SDL_Color white = {255, 255, 255};
 	const SDL_Color black = {0, 0, 0};
 
-	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Hello World!", black);
+	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Click Me!", black);
 	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 	SDL_FreeSurface(textSurface);
 
+	int dexWidth, dexHeight;
 	int textWidth, textHeight;
+
+	SDL_QueryTexture(dexTexture, nullptr, nullptr, &dexWidth, &dexHeight);
 	SDL_QueryTexture(textTexture, nullptr, nullptr, &textWidth, &textHeight);
-	int initialHeight = 10;
-	SDL_Rect textDest = {0, initialHeight, textWidth, textHeight};
+
+	dexWidth *= 5; dexHeight *= 5;
+
+	SDL_Rect dexDest = {WINDOW_WIDTH/2 - dexWidth/2, WINDOW_HEIGHT/2 - dexHeight/2, dexWidth, dexHeight};
+
+	int initialHeight = WINDOW_HEIGHT/2 + dexHeight/2 + textWidth/2;
+	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth/2, initialHeight, textWidth, textHeight};
+	bool dexDance = false;
 
 	SDL_Event sdlEvent;
 	bool sdlQuit = false;
@@ -113,10 +126,18 @@ int main()
 
 		// Draw calls
 		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, dexTexture, nullptr, nullptr);
-		if (ui::doButton(0, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
-			std::cout << "pressed button" << std::endl;
+		if (dexDance) {
+			SDL_RenderCopyEx(renderer, dexTexture, nullptr, &dexDest, 5*cos((float)timeElapsed/100.0f), nullptr, SDL_FLIP_NONE);
+		} else {
+			SDL_RenderCopy(renderer, dexTexture, nullptr, &dexDest);
 		}
+
+		con.begin();
+		if (con.button(1, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
+			dexDance = !dexDance;
+		}
+		con.end();
+
 		SDL_RenderCopy(renderer, textTexture, nullptr, &textDest);
 		SDL_RenderPresent(renderer);
 	}

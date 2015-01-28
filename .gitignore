@@ -35,3 +35,13 @@ obj
 
 # Executable
 pokedex
+
+# Cmake
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# sqlite
+sqlite/shell
