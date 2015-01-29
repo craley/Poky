@@ -1,6 +1,9 @@
 #pragma once
 
-namespace ui {
+#include <memory>
+#include "imgui_renderbackend.hpp"
+
+namespace imgui {
 	class Context {
     public:
         int mouseX = 0;
@@ -13,7 +16,10 @@ namespace ui {
         void end();
 
         bool mouseHit(int x, int y, int w, int h);
-        void drawRect(SDL_Renderer *renderer, int x, int y, int w, int h, SDL_Color color);
-        bool button(int id, SDL_Renderer *renderer, int x, int y, int w, int h);
+        bool button(int id, int x, int y, int w, int h);
+
+		void setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend); 
+	private:
+		std::unique_ptr<RenderBackend> m_renderBackend;
 	};
 } // namespace ui

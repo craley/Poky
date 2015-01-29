@@ -1,10 +1,12 @@
 #include <iostream>
 #include <string>
+#include <memory>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "imgui.h"
+#include "imgui.hpp"
+#include "imgui_sdlbackend.hpp"
 #include "sqlite/sqlite3.h"
 
 const int WINDOW_WIDTH = 640;
@@ -27,14 +29,18 @@ int main(int, char**)
 		return 1;
 	}
 
-	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED,
+										  SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
+										  SDL_WINDOW_SHOWN);
 	if (window == nullptr) {
 		std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer *renderer = SDL_CreateRenderer(
+		window, -1,
+		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr) {
 		SDL_DestroyWindow(window);
 		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -69,8 +75,8 @@ int main(int, char**)
 		return 1;
 	}
 
-	//const SDL_Color white = {255, 255, 255};
-	const SDL_Color black = {0, 0, 0};
+	//const SDL_Color white = {255, 255, 255, 255};
+	const SDL_Color black = {0, 0, 0, 255};
 
 	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Click Me!", black);
 	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -87,7 +93,7 @@ int main(int, char**)
 	SDL_Rect dexDest = {WINDOW_WIDTH/2 - dexWidth/2, WINDOW_HEIGHT/2 - dexHeight/2, dexWidth, dexHeight};
 
 	int initialHeight = WINDOW_HEIGHT/2 + dexHeight/2 + textWidth/2;
-	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth/2, initialHeight, textWidth, textHeight};
+	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth/2, initialHeight, 2*textWidth, 2*textHeight};
 	bool dexDance = false;
 
 	SDL_Event sdlEvent;
@@ -95,7 +101,8 @@ int main(int, char**)
 
 	unsigned long timeElapsed = SDL_GetTicks();
 
-	ui::Context con;
+	imgui::Context con;
+	con.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(renderer));
 
 	while (!sdlQuit) {
 		timeElapsed = SDL_GetTicks();
@@ -133,7 +140,7 @@ int main(int, char**)
 		}
 
 		con.begin();
-		if (con.button(1, renderer, textDest.x, textDest.y, textDest.w, textDest.h)) {
+		if (con.button(1, textDest.x, textDest.y, textDest.w, textDest.h)) {
 			dexDance = !dexDance;
 		}
 		con.end();
