@@ -7,7 +7,7 @@
 
 #include "imgui.hpp"
 #include "imgui_sdlbackend.hpp"
-#include "sqlite/sqlite3.h"
+#include "sqlite3.h"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
