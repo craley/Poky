@@ -7,12 +7,12 @@ namespace imgui {
 	static const SDL_Color RED    = {255, 0, 0, 255};
 	static const SDL_Color GREEN  = {0, 255, 0, 255};
 
-	void Context::begin()
+	void UIState::begin()
 	{
 		hotItem = 0;
 	}
 
-	void Context::end()
+	void UIState::end()
 	{
 		if (!mouseDown) {
 			activeItem = 0;
@@ -23,19 +23,19 @@ namespace imgui {
 		}
 	}
 
-	bool Context::mouseHit(int x, int y, int w, int h)
+	bool UIState::mouseHit(int x, int y, int w, int h)
 	{
 		if (mouseX < x || mouseY < y || mouseX >= x + w || mouseY >= y + h)
 			return false;
 		return true;
 	}
 
-	void Context::setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend)
+	void UIState::setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend)
 	{
 		m_renderBackend = std::move(renderBackend);
 	}
 
-	bool Context::button(int id, int x, int y, int w, int h)
+	bool UIState::button(int id, int x, int y, int w, int h)
 	{
 		SDL_Color color = CYAN;
 

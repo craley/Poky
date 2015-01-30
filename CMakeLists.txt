@@ -25,7 +25,12 @@ find_package(Sqlite3 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR})
 include_directories(include)
 
+add_executable(
+    ${PROJECT_NAME}
+    main.cpp
+    render_context.cpp
+    imgui/imgui.cpp imgui/imgui_sdlbackend.cpp
+)
 
-add_executable(${PROJECT_NAME} main.cpp imgui.cpp imgui_sdlbackend.cpp)
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${BIN_DIR})

@@ -4,7 +4,7 @@
 #include "imgui_renderbackend.hpp"
 
 namespace imgui {
-	class Context {
+	class UIState {
     public:
         int mouseX = 0;
         int mouseY = 0;

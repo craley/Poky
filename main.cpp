@@ -5,63 +5,36 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "imgui.hpp"
-#include "imgui_sdlbackend.hpp"
+#include "options.hpp"
+#include "render_context.hpp"
+#include "imgui/imgui.hpp"
+#include "imgui/imgui_sdlbackend.hpp"
 #include "sqlite3.h"
-
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
 
 int main(int, char**)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
-		std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
+	using options::WINDOW_WIDTH;
+	using options::WINDOW_HEIGHT;
 
-	if (IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF) == -1) {
-		std::cerr << "IMG_Init Error: " << IMG_GetError() << std::endl;
-		return 1;
-	}
-
-	if (TTF_Init() == -1) {
-		std::cerr << "TTF_Init Error: " << TTF_GetError() << std::endl;
-		return 1;
-	}
-
-	SDL_Window *window = SDL_CreateWindow("Pokedex", SDL_WINDOWPOS_CENTERED,
-										  SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
-										  SDL_WINDOW_SHOWN);
-	if (window == nullptr) {
-		std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-		SDL_Quit();
-		return 1;
-	}
-
-	SDL_Renderer *renderer = SDL_CreateRenderer(
-		window, -1,
-		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (renderer == nullptr) {
-		SDL_DestroyWindow(window);
-		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-		SDL_Quit();
+	RenderContext context;
+	if (!context.initalizeSDL()) {
 		return 1;
 	}
 
 	SDL_Surface *dexSurface = IMG_Load("assets/pokedex.png");
 	if (dexSurface == nullptr) {
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(context.renderer);
+		SDL_DestroyWindow(context.window);
 		std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
 		return 1;
 	}
 
-	SDL_Texture *dexTexture = SDL_CreateTextureFromSurface(renderer, dexSurface);
+	SDL_Texture *dexTexture = SDL_CreateTextureFromSurface(context.renderer, dexSurface);
 	SDL_FreeSurface(dexSurface);
 	if (dexTexture == nullptr) {
 		SDL_DestroyTexture(dexTexture);
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(context.renderer);
+		SDL_DestroyWindow(context.window);
 		std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		return 1;
 	}
@@ -70,8 +43,8 @@ int main(int, char**)
 	font = TTF_OpenFont("assets/DroidSansMono.ttf", 12);
 	if (font == nullptr) {
 		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(context.renderer);
+		SDL_DestroyWindow(context.window);
 		return 1;
 	}
 
@@ -79,7 +52,7 @@ int main(int, char**)
 	const SDL_Color black = {0, 0, 0, 255};
 
 	SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Click Me!", black);
-	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(context.renderer, textSurface);
 	SDL_FreeSurface(textSurface);
 
 	int dexWidth, dexHeight;
@@ -93,7 +66,7 @@ int main(int, char**)
 	SDL_Rect dexDest = {WINDOW_WIDTH/2 - dexWidth/2, WINDOW_HEIGHT/2 - dexHeight/2, dexWidth, dexHeight};
 
 	int initialHeight = WINDOW_HEIGHT/2 + dexHeight/2 + textWidth/2;
-	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth/2, initialHeight, 2*textWidth, 2*textHeight};
+	SDL_Rect textDest = {WINDOW_WIDTH/2 - textWidth, initialHeight, 2*textWidth, 2*textHeight};
 	bool dexDance = false;
 
 	SDL_Event sdlEvent;
@@ -101,8 +74,9 @@ int main(int, char**)
 
 	unsigned long timeElapsed = SDL_GetTicks();
 
-	imgui::Context con;
-	con.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(renderer));
+	imgui::UIState userInterface;
+	userInterface.setRenderBackend(
+		std::make_unique<imgui::SDLRenderBackend>(context.renderer));
 
 	while (!sdlQuit) {
 		timeElapsed = SDL_GetTicks();
@@ -114,17 +88,17 @@ int main(int, char**)
 					sdlQuit = true;
 					break;
 				case SDL_MOUSEMOTION:
-					con.mouseX = sdlEvent.motion.x;
-					con.mouseY = sdlEvent.motion.y;
+					userInterface.mouseX = sdlEvent.motion.x;
+					userInterface.mouseY = sdlEvent.motion.y;
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-						con.mouseDown = true;
+						userInterface.mouseDown = true;
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
 					if (sdlEvent.button.button == SDL_BUTTON_LEFT)
-						con.mouseDown = false;
+						userInterface.mouseDown = false;
 					break;
 			}
 		}
@@ -132,28 +106,28 @@ int main(int, char**)
 		textDest.y = initialHeight + 5.0f*cos((float)timeElapsed/100.0f);
 
 		// Draw calls
-		SDL_RenderClear(renderer);
+		SDL_RenderClear(context.renderer);
 		if (dexDance) {
-			SDL_RenderCopyEx(renderer, dexTexture, nullptr, &dexDest, 5*cos((float)timeElapsed/100.0f), nullptr, SDL_FLIP_NONE);
+			SDL_RenderCopyEx(
+				context.renderer, dexTexture, nullptr, &dexDest,
+				5*cos((float)timeElapsed/100.0f), nullptr, SDL_FLIP_NONE
+			);
 		} else {
-			SDL_RenderCopy(renderer, dexTexture, nullptr, &dexDest);
+			SDL_RenderCopy(context.renderer, dexTexture, nullptr, &dexDest);
 		}
 
-		con.begin();
-		if (con.button(1, textDest.x, textDest.y, textDest.w, textDest.h)) {
+		userInterface.begin();
+		if (userInterface.button(1, textDest.x, textDest.y, textDest.w, textDest.h)) {
 			dexDance = !dexDance;
 		}
-		con.end();
+		userInterface.end();
 
-		SDL_RenderCopy(renderer, textTexture, nullptr, &textDest);
-		SDL_RenderPresent(renderer);
+		SDL_RenderCopy(context.renderer, textTexture, nullptr, &textDest);
+		SDL_RenderPresent(context.renderer);
 	}
 
 	SDL_DestroyTexture(dexTexture);
 	SDL_DestroyTexture(textTexture);
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
-
+	context.destroy();
 	return 0;
 }
