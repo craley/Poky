@@ -1,3 +1,6 @@
+#ifndef POKEDEXDATA_HPP
+#define POKEDEXDATA_HPP
+
 #include <cstddef>
 #include <string>
 
@@ -37,3 +40,5 @@ private:
 	class PokemonData_;
 	PokemonData_* impl;
 };
+
+#endif
