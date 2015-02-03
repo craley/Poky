@@ -48,3 +48,4 @@ sqlite/shell
 
 # build
 _build
+.DS_Store

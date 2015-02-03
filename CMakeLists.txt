@@ -29,7 +29,9 @@ add_executable(
     ${PROJECT_NAME}
     main.cpp
     render_context.cpp
-    imgui/imgui.cpp imgui/imgui_sdlbackend.cpp
+    imgui.cpp
+	imgui_sdlbackend.cpp
+	home_screen.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
