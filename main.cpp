@@ -57,6 +57,11 @@ int main(int, char**)
 		switch(currentScreen) {
 			case ScreenType::HOME:
 				homeScreen.frameStep(timeElapsed);
+				break;
+		}
+
+		switch(currentScreen) {
+			case ScreenType::HOME:
 				homeScreen.render(timeElapsed);
 				break;
 		}
