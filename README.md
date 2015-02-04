@@ -25,6 +25,7 @@ JSON for serialization
 - [SDL2](https://www.libsdl.org/download-2.0.php)
 - [SDL_image 2.0](https://www.libsdl.org/projects/SDL_image/)
 - [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/)
+- [Sqlite 3](http://www.sqlite.org/download.html)
 
 #### Instructions
 1. Fork this repo
