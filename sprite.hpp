@@ -20,14 +20,15 @@ public:
 	void setScale(const float w, const float h);
 	void setScale(const float s);
 	void setSubRect(const int x, const int y, const int w, const int h);
+	void setAngle(float angle);
 
 	SDL_Rect rect() const;
 	SDL_Rect subRect() const;
-	int angle() const;
+	float angle() const;
 	SDL_Texture *texture() const;
 
 private:
-	int m_angle = 0;
+	float m_angle = 0.0f;
 	float m_scaleX = 1.0f;
 	float m_scaleY = 1.0f;
 	SDL_Rect m_destRect = EMPTY_RECT;

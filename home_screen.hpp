@@ -24,12 +24,9 @@ private:
 	int m_initialHeight = 0;
 
 	SDL_Rect m_textDest = EMPTY_RECT;
-	SDL_Rect m_cartridgeDest = EMPTY_RECT;
 
 	TTF_Font *m_font = nullptr;
-
 	SDL_Texture *m_textTexture = nullptr;
-	SDL_Texture *m_cartridgeTexture = nullptr;
 
 	Sprite m_pokedexSprite;
 	Sprite m_cartridgeSprite;

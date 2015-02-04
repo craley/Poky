@@ -91,16 +91,16 @@ void HomeScreen::render(unsigned long elapsedMS)
 {
 	SDL_RenderClear(m_context->renderer);
 
-	SDL_Rect dexRect = m_pokedexSprite.rect();
 	if (m_dexDance) {
-		// Give the object some oscillation
-		SDL_RenderCopyEx(
-			m_context->renderer, m_pokedexSprite.texture(), nullptr, &dexRect,
-			5.0f*cos(static_cast<float>(elapsedMS/100.0f)), nullptr, SDL_FLIP_NONE
-			);
-	} else {
-		SDL_RenderCopy(m_context->renderer, m_pokedexSprite.texture(), nullptr, &dexRect);
-	}
+        m_pokedexSprite.setAngle(5.0f*cos(static_cast<float>(elapsedMS/100.0f)));
+	} else if (m_pokedexSprite.angle() != 0) {
+        int angle = m_pokedexSprite.angle();
+        if (angle < 0) {
+            m_pokedexSprite.setAngle(1.0f*(elapsedMS/1000.0f)+angle);
+        } else if (angle > 0) {
+            m_pokedexSprite.setAngle(-1.0f*(elapsedMS/1000.0f)+angle);
+        }
+    }
 
 	m_userInterface.begin();
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
@@ -110,5 +110,6 @@ void HomeScreen::render(unsigned long elapsedMS)
 
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
 	m_context->render(m_cartridgeSprite);
+	m_context->render(m_pokedexSprite);
 	SDL_RenderPresent(m_context->renderer);
 }

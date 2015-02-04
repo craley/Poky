@@ -107,6 +107,11 @@ void Sprite::setSubRect(const int x, const int y, const int w, const int h)
 	m_sourceRect = {x, y, w, h};
 }
 
+void Sprite::setAngle(float angle)
+{
+    m_angle = angle;
+}
+
 SDL_Rect Sprite::rect() const
 {
 	SDL_Rect scaled = m_destRect;
@@ -121,7 +126,7 @@ SDL_Rect Sprite::subRect() const
 	return m_sourceRect;
 }
 
-int Sprite::angle() const
+float Sprite::angle() const
 {
 	return m_angle;
 }
