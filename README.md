@@ -28,14 +28,8 @@ JSON for serialization
 
 #### Instructions
 1. Fork this repo
-2. Clone
-```
-git clone link-to-your-fork
-```
-3. Create branch
-```
-git checkout -b my-feature
-```
+2. Clone: ```git clone link-to-your-fork```
+3. Create branch: ```git checkout -b my-feature```
 4. Make some change
-5. Commit it
+5. Commit it ```git commit```
 6. Do a pull request
