@@ -52,5 +52,6 @@ A pokedex executable will be generated in the root
 2. Set the source path to point to the pokedex root
 3. Set the build path to point to Pokedex/_build
 4. configure
+5. You'll need to edit the `SDL_INCLUDE_LIBRARY` and similar paths to point to their respective folders 
 5. generate
 6. the generated visual studio (or other ide files) project is in _build
