@@ -25,3 +25,17 @@ JSON for serialization
 - [SDL2](https://www.libsdl.org/download-2.0.php)
 - [SDL_image 2.0](https://www.libsdl.org/projects/SDL_image/)
 - [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/)
+
+#### Instructions
+1. Fork this repo
+2. Clone
+```
+git clone link-to-your-fork
+```
+3. Create branch
+```
+git checkout -b my-feature
+```
+4. Make some change
+5. Commit it
+6. Do a pull request
