@@ -20,7 +20,6 @@ enum class ScreenType { HOME };
 int main(int, char**)
 {
 	RenderContext context;
-
 	HomeScreen homeScreen;
 
 	if (!context.initalizeSDL()) {

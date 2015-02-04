@@ -19,21 +19,17 @@ namespace ext {
 
 bool HomeScreen::initialize(RenderContext *context)
 {
-	Screen::initialize(context);
-
-	SDL_Surface *dexSurface = IMG_Load("assets/pokedex.png");
-	if (dexSurface == nullptr) {
-		std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
+	if (!Screen::initialize(context)) {
 		return false;
 	}
 
-	m_dexTexture = SDL_CreateTextureFromSurface(m_context->renderer, dexSurface);
-	SDL_FreeSurface(dexSurface);
-	if (m_dexTexture == nullptr) {
-		SDL_DestroyTexture(m_dexTexture);
-		std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
+	m_cartridgeSprite.setImage(m_context->renderer, "assets/cartridge.png");
+	m_cartridgeSprite.setScale(2);
+
+	m_pokedexSprite.setImage(m_context->renderer, "assets/pokedex.png");
+	m_pokedexSprite.setScale(5, 5);
+	SDL_Rect dexRect = m_pokedexSprite.rect();
+	m_pokedexSprite.setPosition(WINDOW_WIDTH/2 - dexRect.w/2, WINDOW_HEIGHT/2 - dexRect.h/2);
 
 	m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
 	if (m_font == nullptr) {
@@ -41,31 +37,18 @@ bool HomeScreen::initialize(RenderContext *context)
 		return false;
 	}
 
-	//const SDL_Color white = {255, 255, 255, 255};
-	const SDL_Color black = {0, 0, 0, 255};
 	std::wstring wText = L"Female: \u2640, Male: \u2642";
 
 	SDL_Surface *textSurface = TTF_RenderUNICODE_Solid(
 		m_font,
 		ext::UInt16String(wText.begin(), wText.end()).c_str(),
-		black);
+		SDL_Color({0, 0, 0, 255}));
 	m_textTexture = SDL_CreateTextureFromSurface(m_context->renderer, textSurface);
 	SDL_FreeSurface(textSurface);
 
-	int dexWidth, dexHeight;
 	int textWidth, textHeight;
-
-	SDL_QueryTexture(m_dexTexture, nullptr, nullptr, &dexWidth, &dexHeight);
 	SDL_QueryTexture(m_textTexture, nullptr, nullptr, &textWidth, &textHeight);
-
-	dexWidth *= 5; dexHeight *= 5;
-	m_dexDest = {
-		WINDOW_WIDTH/2 - dexWidth/2,
-		WINDOW_HEIGHT/2 - dexHeight/2,
-		dexWidth, dexHeight
-	};
-
-	m_initialHeight = WINDOW_HEIGHT/2 + dexHeight/2 + textWidth/2;
+	m_initialHeight = WINDOW_HEIGHT/2 + dexRect.h/2 + textWidth/2;
 	m_textDest  = {WINDOW_WIDTH/2 - textWidth/2, m_initialHeight, textWidth, textHeight};
 
 	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
@@ -78,7 +61,7 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 	m_textDest.y = m_initialHeight + 5.0f*cos((float)elapsedMS/100.0f);
 }
 
-void HomeScreen::handleEvent(SDL_Event &sdlEvent)
+void HomeScreen::handleEvent(const SDL_Event &sdlEvent)
 {
 	switch(sdlEvent.type) {
 		case SDL_MOUSEMOTION:
@@ -99,7 +82,8 @@ void HomeScreen::handleEvent(SDL_Event &sdlEvent)
 
 void HomeScreen::destroy()
 {
-	SDL_DestroyTexture(m_dexTexture);
+	SDL_DestroyTexture(m_pokedexSprite.texture());
+	SDL_DestroyTexture(m_cartridgeSprite.texture());
 	SDL_DestroyTexture(m_textTexture);
 }
 
@@ -107,14 +91,15 @@ void HomeScreen::render(unsigned long elapsedMS)
 {
 	SDL_RenderClear(m_context->renderer);
 
+	SDL_Rect dexRect = m_pokedexSprite.rect();
 	if (m_dexDance) {
 		// Give the object some oscillation
 		SDL_RenderCopyEx(
-				m_context->renderer, m_dexTexture, nullptr, &m_dexDest,
-				5*cos((float)elapsedMS/100.0f), nullptr, SDL_FLIP_NONE
-				);
+			m_context->renderer, m_pokedexSprite.texture(), nullptr, &dexRect,
+			5.0f*cos(static_cast<float>(elapsedMS/100.0f)), nullptr, SDL_FLIP_NONE
+			);
 	} else {
-		SDL_RenderCopy(m_context->renderer, m_dexTexture, nullptr, &m_dexDest);
+		SDL_RenderCopy(m_context->renderer, m_pokedexSprite.texture(), nullptr, &dexRect);
 	}
 
 	m_userInterface.begin();
@@ -124,5 +109,6 @@ void HomeScreen::render(unsigned long elapsedMS)
 	m_userInterface.end();
 
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
+	m_context->render(m_cartridgeSprite);
 	SDL_RenderPresent(m_context->renderer);
 }

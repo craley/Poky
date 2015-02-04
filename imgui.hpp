@@ -20,6 +20,6 @@ namespace imgui {
 
 		void setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend); 
 	private:
-		std::unique_ptr<RenderBackend> m_renderBackend;
+		std::unique_ptr<RenderBackend> m_renderBackend = nullptr;
 	};
 } // namespace ui

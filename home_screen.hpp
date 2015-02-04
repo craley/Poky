@@ -6,6 +6,7 @@
 
 #include "screen.hpp"
 #include "imgui.hpp"
+#include "sprite.hpp"
 
 class HomeScreen : Screen {
 public:
@@ -14,21 +15,23 @@ public:
 
 	bool initialize(RenderContext *context) override;
 	void destroy() override;
-	void handleEvent(SDL_Event &sdlEvent) override;
+	void handleEvent(const SDL_Event &sdlEvent) override;
 	void frameStep(unsigned long tickMS) override;
 	void render(unsigned long tickMS) override;
 
 private:
-	bool m_dexDance;
-	int m_initialHeight;
+	bool m_dexDance = false;
+	int m_initialHeight = 0;
 
-	SDL_Rect m_dexDest;
-	SDL_Rect m_textDest;
+	SDL_Rect m_textDest = EMPTY_RECT;
+	SDL_Rect m_cartridgeDest = EMPTY_RECT;
 
-	TTF_Font *m_font;
+	TTF_Font *m_font = nullptr;
 
-	SDL_Texture *m_dexTexture;
-	SDL_Texture *m_textTexture;
+	SDL_Texture *m_textTexture = nullptr;
+	SDL_Texture *m_cartridgeTexture = nullptr;
 
+	Sprite m_pokedexSprite;
+	Sprite m_cartridgeSprite;
 	imgui::UIState m_userInterface;
 };

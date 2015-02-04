@@ -11,7 +11,7 @@ public:
 		return true;
 	}
 	virtual void destroy() {};
-	virtual void handleEvent(SDL_Event &) {}
+	virtual void handleEvent(const SDL_Event &) {}
 	virtual void frameStep(unsigned long tickMS) = 0;
 	virtual void render(unsigned long tickMS) = 0;
 

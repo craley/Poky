@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 project(pokedex)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${pokedex_SOURCE_DIR}/cmake")
 set(BIN_DIR ${pokedex_SOURCE_DIR}/)
 
@@ -32,6 +31,7 @@ add_executable(
     imgui.cpp
 	imgui_sdlbackend.cpp
 	home_screen.cpp
+	sprite.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
