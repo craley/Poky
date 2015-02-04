@@ -9,9 +9,8 @@ Search for Pokemon for name or types
 JSON for serialization
 
 ######Mini Games:
-- Quiz: Who's that pokemon?
-- Quiz: Effectiveness of types
-- Whackemole
+- Who's that Pokemon? & Pokemon quiz
+- Pokemon snap 2D
 
 ######Ideas:
 - Give out Pokemon cards (achievements)
@@ -25,3 +24,34 @@ JSON for serialization
 - [SDL2](https://www.libsdl.org/download-2.0.php)
 - [SDL_image 2.0](https://www.libsdl.org/projects/SDL_image/)
 - [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/)
+- [Sqlite 3](http://www.sqlite.org/download.html)
+
+#### Workflow Instructions
+1. Fork this repo
+2. Clone: ```git clone link-to-your-fork```
+3. Create branch: ```git checkout -b my-feature```
+4. Make some change
+5. Commit it ```git commit```
+6. Do a pull request
+
+#### Build Instructions
+Building  requires [Cmake >= 2.8](http://www.cmake.org/) in order to generate the build files
+
+##### *nix instructions
+
+```bash
+mkdir _build && cd _build
+cmake ..
+make
+make install
+```
+A pokedex executable will be generated in the root
+
+##### Windows instructions
+1. Download the cmake gui tool
+2. Set the source path to point to the pokedex root
+3. Set the build path to point to Pokedex/_build
+4. configure
+5. You'll need to edit the `SDL_INCLUDE_LIBRARY` and similar paths to point to their respective folders 
+5. generate
+6. the generated visual studio (or other ide files) project is in _build
