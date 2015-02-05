@@ -56,11 +56,6 @@ bool HomeScreen::initialize(RenderContext *context)
 	return true;
 }
 
-void HomeScreen::frameStep(unsigned long elapsedMS)
-{
-	m_textDest.y = m_initialHeight + 5.0f*cos((float)elapsedMS/100.0f);
-}
-
 void HomeScreen::handleEvent(const SDL_Event &sdlEvent)
 {
 	switch(sdlEvent.type) {
@@ -80,15 +75,17 @@ void HomeScreen::handleEvent(const SDL_Event &sdlEvent)
 	}
 }
 
-void HomeScreen::destroy()
+HomeScreen::~HomeScreen()
 {
 	SDL_DestroyTexture(m_pokedexSprite.texture());
 	SDL_DestroyTexture(m_cartridgeSprite.texture());
 	SDL_DestroyTexture(m_textTexture);
 }
 
-void HomeScreen::render(unsigned long elapsedMS)
+void HomeScreen::frameStep(unsigned long elapsedMS)
 {
+	m_textDest.y = m_initialHeight + 5.0f*cos((float)elapsedMS/100.0f);
+
 	SDL_RenderClear(m_context->renderer);
 
 	if (m_dexDance) {

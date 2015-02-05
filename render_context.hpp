@@ -4,6 +4,7 @@
 #include "sprite.hpp"
 
 struct RenderContext {
+	~RenderContext();
 	SDL_Renderer *renderer = nullptr;
 	SDL_Window *window = nullptr;
 

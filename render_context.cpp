@@ -49,10 +49,19 @@ bool RenderContext::initalizeSDL()
 	return true;
 }
 
+RenderContext::~RenderContext()
+{
+	destroy();
+}
+
 void RenderContext::destroy()
 {
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	if (renderer) {
+		SDL_DestroyRenderer(renderer);
+	}
+	if (window) {
+		SDL_DestroyWindow(window);
+	}
 	SDL_Quit();
 }
 
@@ -60,5 +69,5 @@ void RenderContext::render(const Sprite &sprite)
 {
 	SDL_Rect dest = sprite.rect();
 	SDL_RenderCopyEx(renderer, sprite.texture(), nullptr, &dest,
-					sprite.angle(), nullptr, SDL_FLIP_NONE);
+			sprite.angle(), nullptr, SDL_FLIP_NONE);
 }

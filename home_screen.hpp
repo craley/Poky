@@ -8,16 +8,15 @@
 #include "imgui.hpp"
 #include "sprite.hpp"
 
-class HomeScreen : Screen {
+class HomeScreen : public Screen {
 public:
 	HomeScreen() :
 		m_dexDance(false) {}
+	~HomeScreen();
 
 	bool initialize(RenderContext *context) override;
-	void destroy() override;
 	void handleEvent(const SDL_Event &sdlEvent) override;
 	void frameStep(unsigned long tickMS) override;
-	void render(unsigned long tickMS) override;
 
 private:
 	bool m_dexDance = false;

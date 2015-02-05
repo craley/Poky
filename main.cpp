@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -15,25 +16,24 @@
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
 
-enum class ScreenType { HOME };
-
 int main(int, char**)
 {
 	RenderContext context;
-	HomeScreen homeScreen;
+	std::vector<std::unique_ptr<Screen>> screens;
+	screens.emplace_back(new HomeScreen); // avoid copy
 
 	if (!context.initalizeSDL()) {
-		context.destroy();
 		return 1;
 	}
-	if (!homeScreen.initialize(&context)) {
-		context.destroy();
-		return 1;
+	for (auto &screen : screens) {
+		if (!screen->initialize(&context)) {
+			return 1;
+		}
 	}
 
 	SDL_Event sdlEvent;
 	bool sdlQuit = false;
-	ScreenType currentScreen = ScreenType::HOME;
+	int currentScreen = 0;
 
 	while (!sdlQuit) {
 		// Poll for events
@@ -44,29 +44,11 @@ int main(int, char**)
 					break;
 			}
 
-			switch(currentScreen) {
-				case ScreenType::HOME:
-					homeScreen.handleEvent(sdlEvent);
-					break;
-			}
+			screens[currentScreen]->handleEvent(sdlEvent);
 		}
 
-		auto timeElapsed = SDL_GetTicks();
-
-		switch(currentScreen) {
-			case ScreenType::HOME:
-				homeScreen.frameStep(timeElapsed);
-				break;
-		}
-
-		switch(currentScreen) {
-			case ScreenType::HOME:
-				homeScreen.render(timeElapsed);
-				break;
-		}
+		screens[currentScreen]->frameStep(SDL_GetTicks());
 	}
 
-	homeScreen.destroy();
-	context.destroy();
 	return 0;
 }
