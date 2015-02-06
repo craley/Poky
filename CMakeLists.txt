@@ -25,13 +25,14 @@ include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INC
 include_directories(include)
 
 add_executable(
-    ${PROJECT_NAME}
-    main.cpp
-    render_context.cpp
-    imgui.cpp
+	${PROJECT_NAME}
+	main.cpp
+	render_context.cpp
+	imgui.cpp
 	imgui_sdlbackend.cpp
 	home_screen.cpp
 	sprite.cpp
+	texture.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
