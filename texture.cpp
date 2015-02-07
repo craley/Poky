@@ -60,6 +60,7 @@ SDL_Texture *loadTextureFromFile(SDL_Renderer *renderer, const std::string &imag
 		std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
 		tempSurface = errorSurface();
 	}
+	SDL_Texture *createdTexture= SDL_CreateTextureFromSurface(renderer, tempSurface);
 	SDL_FreeSurface(tempSurface);
-	return SDL_CreateTextureFromSurface(renderer, tempSurface);
+	return createdTexture;
 }
