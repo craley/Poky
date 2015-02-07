@@ -84,20 +84,20 @@ HomeScreen::~HomeScreen()
 
 void HomeScreen::frameStep(unsigned long elapsedMS)
 {
+	static unsigned long lastTime = 0;
+	float deltaS = static_cast<float>(elapsedMS - lastTime)/1000.0f;
+	lastTime = elapsedMS;
+
 	m_textDest.y = m_initialHeight + 5.0f*cos((float)elapsedMS/100.0f);
 
 	SDL_RenderClear(m_context->renderer);
 
 	if (m_dexDance) {
-        m_pokedexSprite.setAngle(5.0f*cos(static_cast<float>(elapsedMS/100.0f)));
+		m_pokedexSprite.setAngle(5.0f*cos(static_cast<float>(elapsedMS/100.0f)));
 	} else if (m_pokedexSprite.angle() != 0) {
-        int angle = m_pokedexSprite.angle();
-        if (angle < 0) {
-            m_pokedexSprite.setAngle(1.0f*(elapsedMS/1000.0f)+angle);
-        } else if (angle > 0) {
-            m_pokedexSprite.setAngle(-1.0f*(elapsedMS/1000.0f)+angle);
-        }
-    }
+		float angle = m_pokedexSprite.angle();
+		m_pokedexSprite.setAngle(angle + (0 - angle) * 10.0f * deltaS);
+	}
 
 	m_userInterface.begin();
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
