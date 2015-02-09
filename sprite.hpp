@@ -10,12 +10,9 @@
 class Sprite {
 public:
 	Sprite() {};
-	Sprite(SDL_Renderer *renderer, const std::string &imagePath);
 	Sprite(SDL_Texture *texture);
 
-	void setImage(SDL_Renderer *renderer, const std::string &imagePath);
 	void setImage(SDL_Texture *texture);
-
 	void setPosition(const int x, const int y);
 	void setScale(const float w, const float h);
 	void setScale(const float s);

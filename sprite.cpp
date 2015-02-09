@@ -1,22 +1,15 @@
 #include <iostream>
 #include <cassert>
+
 #include <SDL_image.h>
+
 #include "sprite.hpp"
 #include "texture.hpp"
 
-Sprite::Sprite(SDL_Renderer *renderer, const std::string &imagePath)
-{
-	setImage(renderer, imagePath);
-}
 
 Sprite::Sprite(SDL_Texture *texture)
 {
 	setImage(texture);
-}
-
-void Sprite::setImage(SDL_Renderer *renderer, const std::string &imagePath)
-{
-	setImage(loadTextureFromFile(renderer, imagePath));
 }
 
 void Sprite::setImage(SDL_Texture *texture)

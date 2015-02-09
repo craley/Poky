@@ -28,6 +28,9 @@ private:
 	SDL_Texture *m_textTexture = nullptr;
 
 	Sprite m_pokedexSprite;
-	Sprite m_cartridgeSprite;
+
+	Sprite m_cartridgePokemonSnap;
+	Sprite m_cartridgeQuiz;
+
 	imgui::UIState m_userInterface;
 };

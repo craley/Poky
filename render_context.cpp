@@ -3,6 +3,7 @@
 #include <SDL_image.h>
 #include "render_context.hpp"
 #include "options.hpp"
+#include "texture.hpp"
 
 bool RenderContext::initalizeSDL()
 {
@@ -70,4 +71,18 @@ void RenderContext::render(const Sprite &sprite)
 	SDL_Rect dest = sprite.rect();
 	SDL_RenderCopyEx(renderer, sprite.texture(), nullptr, &dest,
 			sprite.angle(), nullptr, SDL_FLIP_NONE);
+}
+
+SDL_Texture *RenderContext::loadTexture(const std::string &texturePath)
+{
+	SDL_Texture *texture = nullptr;
+
+	if (m_textureCache.count(texturePath) > 0) {
+		texture = m_textureCache[texturePath];
+	} else {
+		texture = loadTextureFromFile(renderer, texturePath);
+		m_textureCache.insert(std::pair<std::string, SDL_Texture*>(texturePath, texture));
+	}
+
+	return texture;
 }
