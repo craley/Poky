@@ -40,7 +40,8 @@ bool HomeScreen::initialize(RenderContext *context)
 		m_cartridgePokemonSnap.setScale(2);
 		SDL_Rect cartridgeRect = m_cartridgePokemonSnap.rect();
 		SDL_Rect dexRect = m_pokedexSprite.rect();
-		m_cartridgePokemonSnap.setPosition(dexRect.w / cartridgeRect.w + dexRect.x, dexRect.y + dexRect.h + 15);
+		m_cartridgePokemonSnap.setPosition((dexRect.w - (2*cartridgeRect.w+10))/2 + dexRect.x,
+				dexRect.y + dexRect.h + 15);
 	}
 
 	// Quiz Cartridge sprite
@@ -49,7 +50,7 @@ bool HomeScreen::initialize(RenderContext *context)
 		m_cartridgeQuiz.setScale(2);
 		SDL_Rect cartridgeRect = m_cartridgeQuiz.rect();
 		SDL_Rect dexRect = m_pokedexSprite.rect();
-		m_cartridgeQuiz.setPosition(m_cartridgePokemonSnap.rect().x + cartridgeRect.w+ 10, dexRect.y + dexRect.h + 15);
+		m_cartridgeQuiz.setPosition(m_cartridgePokemonSnap.rect().x + cartridgeRect.w + 10, dexRect.y + dexRect.h + 15);
 	}
 
 	{
@@ -66,6 +67,7 @@ bool HomeScreen::initialize(RenderContext *context)
 			SDL_Color({0, 0, 0, 255}));
 		m_textTexture = SDL_CreateTextureFromSurface(m_context->renderer, textSurface);
 		SDL_FreeSurface(textSurface);
+
 		int textWidth, textHeight;
 		SDL_QueryTexture(m_textTexture, nullptr, nullptr, &textWidth, &textHeight);
 		SDL_Rect dexRect = m_pokedexSprite.rect();
