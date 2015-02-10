@@ -11,6 +11,7 @@
 #include "options.hpp"
 #include "render_context.hpp"
 #include "home_screen.hpp"
+#include "pokedex_screen.hpp"
 #include "sqlite3.h"
 
 using options::WINDOW_WIDTH;
@@ -21,6 +22,7 @@ int main(int, char**)
 	RenderContext context;
 	std::vector<std::unique_ptr<Screen>> screens;
 	screens.emplace_back(new HomeScreen); // avoid copy
+	screens.emplace_back(new PokedexScreen);
 
 	if (!context.initalizeSDL()) {
 		return 1;
@@ -41,6 +43,13 @@ int main(int, char**)
 			switch(sdlEvent.type) {
 				case SDL_QUIT:
 					sdlQuit = true;
+					break;
+				case SDL_KEYDOWN:
+					if (sdlEvent.key.keysym.sym == SDLK_F1) {
+						currentScreen = 0;
+					} else if (sdlEvent.key.keysym.sym == SDLK_F2) {
+						currentScreen = 1;
+					}
 					break;
 			}
 

@@ -56,7 +56,9 @@ bool HomeScreen::initialize(RenderContext *context)
 
 	// Pokeball sprite
 	{
-		m_pokeball.setImage(context->loadTexture("assets/pokeball_background.png"));
+		SDL_Texture *pokeballTexture = context->loadTexture("assets/pokeball_background.png");
+		SDL_SetTextureAlphaMod(pokeballTexture, 90);
+		m_pokeball.setImage(pokeballTexture);
 		m_pokeball.setScale(0.5f);
 	}
 
@@ -81,6 +83,8 @@ bool HomeScreen::initialize(RenderContext *context)
 		m_initialHeight = WINDOW_HEIGHT/2 + dexRect.h/2 + textWidth/2;
 		m_textDest  = {WINDOW_WIDTH/2 - textWidth/2, m_initialHeight, textWidth, textHeight};
 	}
+
+	SDL_SetRenderDrawColor(context->renderer, 75, 67, 142, 255);
 
 	return true;
 }
@@ -123,22 +127,13 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 
 	// Render background
 	{
-		static float initialPos[] = {0.0f, 0.0f};
-		initialPos[0] += deltaS * 15.0f;
-		initialPos[1] += deltaS * 15.0f;
-
 		SDL_Rect ballRect = m_pokeball.rect();
 
-		for (int y = -1; y < WINDOW_HEIGHT/ballRect.h; y++) {
-			for (int x = -1; x < WINDOW_WIDTH/ballRect.w; x++) { 
-				float newX = initialPos[0] + static_cast<float>(x*ballRect.w);
-				float newY = initialPos[1] + static_cast<float>(y*ballRect.h);
-
-				if (newX > WINDOW_WIDTH || newY >WINDOW_HEIGHT) {
-					initialPos[0] = 0.0f;
-					initialPos[1] = 0.0f;
-				}
-
+		m_pokeball.setAngle(10.0f*cos(static_cast<float>(elapsedMS/500.0f)));
+		for (int y = -1; y < WINDOW_HEIGHT/ballRect.h + 1; y++) {
+			for (int x = -1; x < WINDOW_WIDTH/ballRect.w + 1; x++) { 
+				float newX = static_cast<float>(x*ballRect.w);
+				float newY = static_cast<float>(y*ballRect.h);
 				m_pokeball.setPosition(newX, newY);
 				m_context->render(m_pokeball);
 			}
