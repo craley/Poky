@@ -50,7 +50,14 @@ bool HomeScreen::initialize(RenderContext *context)
 		m_cartridgeQuiz.setScale(2);
 		SDL_Rect cartridgeRect = m_cartridgeQuiz.rect();
 		SDL_Rect dexRect = m_pokedexSprite.rect();
-		m_cartridgeQuiz.setPosition(m_cartridgePokemonSnap.rect().x + cartridgeRect.w + 10, dexRect.y + dexRect.h + 15);
+		m_cartridgeQuiz.setPosition(m_cartridgePokemonSnap.rect().x + cartridgeRect.w + 10,
+				dexRect.y + dexRect.h + 15);
+	}
+
+	// Pokeball sprite
+	{
+		m_pokeball.setImage(context->loadTexture("assets/pokeball_background.png"));
+		m_pokeball.setScale(0.5f);
 	}
 
 	{
@@ -114,6 +121,30 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 
 	SDL_RenderClear(m_context->renderer);
 
+	// Render background
+	{
+		static float initialPos[] = {0.0f, 0.0f};
+		initialPos[0] += deltaS * 15.0f;
+		initialPos[1] += deltaS * 15.0f;
+
+		SDL_Rect ballRect = m_pokeball.rect();
+
+		for (int y = -1; y < WINDOW_HEIGHT/ballRect.h; y++) {
+			for (int x = -1; x < WINDOW_WIDTH/ballRect.w; x++) { 
+				float newX = initialPos[0] + static_cast<float>(x*ballRect.w);
+				float newY = initialPos[1] + static_cast<float>(y*ballRect.h);
+
+				if (newX > WINDOW_WIDTH || newY >WINDOW_HEIGHT) {
+					initialPos[0] = 0.0f;
+					initialPos[1] = 0.0f;
+				}
+
+				m_pokeball.setPosition(newX, newY);
+				m_context->render(m_pokeball);
+			}
+		}
+	}
+
 	if (m_dexDance) {
 		m_pokedexSprite.setAngle(5.0f*cos(static_cast<float>(elapsedMS/100.0f)));
 	} else if (m_pokedexSprite.angle() != 0) {
@@ -121,15 +152,18 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 		m_pokedexSprite.setAngle(angle + (0 - angle) * 10.0f * deltaS);
 	}
 
+	// Render image screen elements
+	m_context->render(m_cartridgePokemonSnap);
+	m_context->render(m_cartridgeQuiz);
+	m_context->render(m_pokedexSprite);
+
+	// Render the user interface
 	m_userInterface.begin();
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
 		m_dexDance = !m_dexDance;
 	}
+	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
 	m_userInterface.end();
 
-	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
-	m_context->render(m_cartridgePokemonSnap);
-	m_context->render(m_cartridgeQuiz);
-	m_context->render(m_pokedexSprite);
 	SDL_RenderPresent(m_context->renderer);
 }
