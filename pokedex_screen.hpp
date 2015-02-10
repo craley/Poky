@@ -20,7 +20,9 @@ public:
 private:
 	imgui::UIState m_userInterface;
 	SDL_Texture *m_textTexture;
+
 	Sprite m_pokemonImage;
 	Sprite m_pokemonName;
+
 	PokemonData m_pokeData;
 };

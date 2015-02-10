@@ -9,13 +9,10 @@
 #include "options.hpp"
 #include "home_screen.hpp"
 #include "imgui_sdlbackend.hpp"
+#include "text.hpp"
 
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
-
-namespace ext {
-	typedef std::basic_string<Uint16, std::char_traits<Uint16>, std::allocator<Uint16>> UInt16String;
-}
 
 bool HomeScreen::initialize(RenderContext *context)
 {
@@ -29,7 +26,7 @@ bool HomeScreen::initialize(RenderContext *context)
 	// Pokedex sprite
 	{
 		m_pokedexSprite.setImage(context->loadTexture("assets/pokedex.png"));
-		m_pokedexSprite.setScale(5, 5);
+		m_pokedexSprite.setScale(5);
 		SDL_Rect dexRect = m_pokedexSprite.rect();
 		m_pokedexSprite.setPosition(WINDOW_WIDTH/2 - dexRect.w/2, WINDOW_HEIGHT/3 - dexRect.h/2);
 	}
@@ -69,13 +66,9 @@ bool HomeScreen::initialize(RenderContext *context)
 			return false;
 		}
 
-		std::wstring wText = L"Female: \u2640, Male: \u2642";
-		SDL_Surface *textSurface = TTF_RenderUNICODE_Solid(
-			m_font,
-			ext::UInt16String(wText.begin(), wText.end()).c_str(),
-			SDL_Color({0, 0, 0, 255}));
-		m_textTexture = SDL_CreateTextureFromSurface(m_context->renderer, textSurface);
-		SDL_FreeSurface(textSurface);
+		const std::string txt = "Female: \u2640, Male: \u2642";
+		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt,
+				SDL_Color{0, 0, 0, 255});
 
 		int textWidth, textHeight;
 		SDL_QueryTexture(m_textTexture, nullptr, nullptr, &textWidth, &textHeight);
@@ -157,8 +150,8 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
 		m_dexDance = !m_dexDance;
 	}
+
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
 	m_userInterface.end();
-
 	SDL_RenderPresent(m_context->renderer);
 }

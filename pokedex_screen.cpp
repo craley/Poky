@@ -9,13 +9,10 @@
 #include "render_context.hpp"
 #include "imgui_sdlbackend.hpp"
 #include "pokedex_screen.hpp"
+#include "text.hpp"
 
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
-
-namespace ext {
-	typedef std::basic_string<Uint16, std::char_traits<Uint16>, std::allocator<Uint16>> UInt16String;
-}
 
 bool PokedexScreen::initialize(RenderContext *context)
 {
@@ -25,27 +22,33 @@ bool PokedexScreen::initialize(RenderContext *context)
 
 	m_pokeData.setPokemon("Butterfree");
 
-	// Pokemon name
-	{
-		TTF_Font *m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
-		if (m_font == nullptr) {
-			std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
-			return false;
-		}
+	TTF_Font *m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
+	if (m_font == nullptr) {
+		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
+		return false;
+	}
 
-		std::string wText = m_pokeData.getName();
-		SDL_Surface *textSurface = TTF_RenderUNICODE_Solid(
-				m_font,
-				ext::UInt16String(wText.begin(), wText.end()).c_str(),
-				SDL_Color({255, 255, 255, 255}));
-		m_textTexture = SDL_CreateTextureFromSurface(m_context->renderer, textSurface);
-		SDL_FreeSurface(textSurface);
+	// Pokemon data
+	{
+		std::string txt = "Name: " + m_pokeData.getName()
+			+ "\n" + "Base HP: " + std::to_string(m_pokeData.getBaseHP())
+			+ "\n" + "Base Att: " + std::to_string(m_pokeData.getBaseAtt())
+			+ "\n" + "Base Def: " + std::to_string(m_pokeData.getBaseDef())
+			+ "\n" + "Base Sp Att: " + std::to_string(m_pokeData.getBaseSpAtt())
+			+ "\n" + "Base Sp Def: " + std::to_string(m_pokeData.getBaseSpDef())
+			+ "\n" + m_pokeData.getFlavorText();
+
+		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt);
 		m_pokemonName.setImage(m_textTexture);
 	}
 
 	// Pokemon image
 	{
 		// TODO - sprites TBD
+		// Butterfree for now
+		m_pokemonImage = m_context->loadTexture("assets/sprites/Spr_5b_012.png");
+		m_pokemonImage.setScale(3.0f);
+		m_pokemonImage.setPosition(0, 100);
 	}
 
 	// initialize the user interface
@@ -80,5 +83,6 @@ void PokedexScreen::frameStep(unsigned long elapsedMS)
 {
 	SDL_RenderClear(m_context->renderer);
 	m_context->render(m_pokemonName);
+	m_context->render(m_pokemonImage);
 	SDL_RenderPresent(m_context->renderer);
 }
