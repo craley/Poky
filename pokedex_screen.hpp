@@ -7,6 +7,7 @@
 #include "screen.hpp"
 #include "imgui.hpp"
 #include "sprite.hpp"
+#include "PokemonData.hpp"
 
 class PokedexScreen : public Screen {
 public:
@@ -18,4 +19,8 @@ public:
 
 private:
 	imgui::UIState m_userInterface;
+	SDL_Texture *m_textTexture;
+	Sprite m_pokemonImage;
+	Sprite m_pokemonName;
+	PokemonData m_pokeData;
 };

@@ -23,6 +23,31 @@ bool PokedexScreen::initialize(RenderContext *context)
 		return false;
 	}
 
+	m_pokeData.setPokemon("Butterfree");
+
+	// Pokemon name
+	{
+		TTF_Font *m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
+		if (m_font == nullptr) {
+			std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
+			return false;
+		}
+
+		std::string wText = m_pokeData.getName();
+		SDL_Surface *textSurface = TTF_RenderUNICODE_Solid(
+				m_font,
+				ext::UInt16String(wText.begin(), wText.end()).c_str(),
+				SDL_Color({255, 255, 255, 255}));
+		m_textTexture = SDL_CreateTextureFromSurface(m_context->renderer, textSurface);
+		SDL_FreeSurface(textSurface);
+		m_pokemonName.setImage(m_textTexture);
+	}
+
+	// Pokemon image
+	{
+		// TODO - sprites TBD
+	}
+
 	// initialize the user interface
 	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
 	return true;
@@ -54,5 +79,6 @@ PokedexScreen::~PokedexScreen()
 void PokedexScreen::frameStep(unsigned long elapsedMS)
 {
 	SDL_RenderClear(m_context->renderer);
+	m_context->render(m_pokemonName);
 	SDL_RenderPresent(m_context->renderer);
 }
