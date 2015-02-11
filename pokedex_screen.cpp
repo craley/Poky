@@ -14,6 +14,28 @@
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
 
+bool PokedexScreen::initialize(RenderContext *context)
+{
+	if (!Screen::initialize(context)) {
+		return false;
+	}
+
+	m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
+	if (m_font == nullptr) {
+		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
+		return false;
+	}
+
+	m_pokeData.setPokemon(1);
+	m_currentPokemonID = m_pokeData.getID();
+	setPokedexData(m_currentPokemonID);
+
+	// initialize the user interface
+	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
+	SDL_StartTextInput();
+	return true;
+}
+
 void PokedexScreen::setPokedexData(int id)
 {
 	if (m_textTexture) {
@@ -41,28 +63,6 @@ void PokedexScreen::setPokedexData(int id)
 		m_pokemonImage.setScale(3.0f);
 		m_pokemonImage.setPosition(0, 100);
 	}
-}
-
-bool PokedexScreen::initialize(RenderContext *context)
-{
-	if (!Screen::initialize(context)) {
-		return false;
-	}
-
-	m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
-	if (m_font == nullptr) {
-		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
-		return false;
-	}
-
-	m_pokeData.setPokemon(1);
-	m_currentPokemonID = m_pokeData.getID();
-	setPokedexData(m_currentPokemonID);
-
-	// initialize the user interface
-	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
-	SDL_StartTextInput();
-	return true;
 }
 
 void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
@@ -107,7 +107,7 @@ PokedexScreen::~PokedexScreen()
 {
 }
 
-void PokedexScreen::frameStep(unsigned long elapsedMS)
+void PokedexScreen::frameStep(unsigned long)
 {
 	SDL_RenderClear(m_context->renderer);
 	m_context->render(m_pokemonName);

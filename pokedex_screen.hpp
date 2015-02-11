@@ -21,11 +21,9 @@ public:
 private:
 	imgui::UIState m_userInterface;
 	TTF_Font *m_font;
+	SDL_Texture *m_textTexture = nullptr;
 	PokemonData m_pokeData;
-
-
 	std::string m_textField;
-	SDL_Texture *m_textTexture;
 	Sprite m_pokemonImage;
 	Sprite m_pokemonName;
 

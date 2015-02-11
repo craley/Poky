@@ -59,6 +59,7 @@ bool HomeScreen::initialize(RenderContext *context)
 		m_pokeball.setScale(0.5f);
 	}
 
+	// Test text for the button
 	{
 		m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
 		if (m_font == nullptr) {
