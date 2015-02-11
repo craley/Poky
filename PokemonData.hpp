@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -18,7 +20,7 @@ public:
 
 	int getID();
 	std::string getName();
-	//std::string getSpriteLocation();
+	std::string getSpriteLocation();
 	int getBaseHP();
 	int getBaseAtt();
 	int getBaseDef();

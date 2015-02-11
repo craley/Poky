@@ -45,3 +45,7 @@ install_manifest.txt
 
 # sqlite
 sqlite/shell
+
+# build
+_build
+.DS_Store

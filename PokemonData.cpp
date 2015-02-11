@@ -18,7 +18,7 @@ public:
 
 	int getID();
 	std::string getName();
-	//std::string getSpriteLocation();
+	std::string getSpriteLocation();
 	int getBaseHP();
 	int getBaseAtt();
 	int getBaseDef();
@@ -359,6 +359,11 @@ std::string PokemonData::PokemonData_::getName()
 	return reinterpret_cast<const char*>(sqlite3_column_text(m_pokemonStmt, NAME));
 }
 
+std::string PokemonData::PokemonData_::getSpriteLocation()
+{
+	return reinterpret_cast<const char*>(sqlite3_column_text(m_pokemonStmt, SPRITE));
+}
+
 int PokemonData::PokemonData_::getBaseHP()
 {
 	return sqlite3_column_int(m_pokemonStmt, BASE_HP);
@@ -541,6 +546,11 @@ int PokemonData::getID()
 std::string PokemonData::getName()
 {
 	return impl->getName();
+}
+
+std::string PokemonData::getSpriteLocation()
+{
+	return impl->getSpriteLocation();
 }
 
 int PokemonData::getBaseHP()
