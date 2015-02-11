@@ -84,21 +84,7 @@ bool HomeScreen::initialize(RenderContext *context)
 
 void HomeScreen::handleEvent(const SDL_Event &sdlEvent)
 {
-	switch(sdlEvent.type) {
-		case SDL_MOUSEMOTION:
-			m_userInterface.mouseX = sdlEvent.motion.x;
-			m_userInterface.mouseY = sdlEvent.motion.y;
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-				m_userInterface.mouseDown = true;
-			}
-			break;
-		case SDL_MOUSEBUTTONUP:
-			if (sdlEvent.button.button == SDL_BUTTON_LEFT)
-				m_userInterface.mouseDown = false;
-			break;
-	}
+	m_userInterface.handleEvent(sdlEvent);
 }
 
 HomeScreen::~HomeScreen()
