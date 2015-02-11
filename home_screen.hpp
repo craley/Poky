@@ -31,6 +31,7 @@ private:
 
 	Sprite m_cartridgePokemonSnap;
 	Sprite m_cartridgeQuiz;
+	Sprite m_pokeball;
 
 	imgui::UIState m_userInterface;
 };
