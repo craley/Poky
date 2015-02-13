@@ -22,7 +22,7 @@ namespace imgui {
 				activeItem = -1;
 			}
 		}
-		memset(keysEntered, 0, sizeof(keysEntered));
+		keysEntered = "";
 		m_currentKeyIndex = 0;
 	}
 
@@ -39,21 +39,25 @@ namespace imgui {
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if (sdlEvent.button.button == SDL_BUTTON_LEFT)
+				if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
 					mouseDown = false;
+				}
 				break;
 			case SDL_TEXTINPUT:
-				strcat(keysEntered, sdlEvent.text.text);
-				++m_currentKeyIndex;
+				keysEntered += sdlEvent.text.text;
 				break;
 			case SDL_KEYDOWN:
 				if (sdlEvent.key.keysym.sym == SDLK_BACKSPACE) {
-				--m_currentKeyIndex;
+					--m_currentKeyIndex;
+				} else if (sdlEvent.key.keysym.sym == SDLK_v &&
+						   (sdlEvent.key.keysym.mod == KMOD_LCTRL ||
+							sdlEvent.key.keysym.mod == KMOD_RCTRL)) {
+					keysEntered = SDL_GetClipboardText();
 				}
 				break;
 			case SDL_TEXTEDITING:
 				m_cursor = sdlEvent.edit.start;
-				std::cout << "cursor: " << m_cursor << std::endl;
+				std::cout << "text editing event\n";
 				break;
 		}
 	}
@@ -97,9 +101,19 @@ namespace imgui {
 		return false;
 	}
 
+	inline void popBackString(std::string &text) {
+		while (text.size()) {
+			char c = text.back();
+			text.pop_back();
+			// compatible with utf-8
+			if ((c & 0xC0) != 0x80)
+				break;
+		}
+	}
+
 	bool UIState::textField(int id, int x, int y, int w, int h, std::string &text)
 	{
-		SDL_Color color = {128, 0, 128, 80};
+		SDL_Color color = {128, 0, 128, 255};
 
 		if (mouseHit(x, y, w, h)) {
 			hotItem = id;
@@ -108,22 +122,20 @@ namespace imgui {
 			}
 		}
 
-		std::string keysStr = std::string(keysEntered);
-		text += keysStr;
-		if (m_currentKeyIndex < 0) {
-			int index = m_currentKeyIndex;
-			while (index && text.size()) {
-				text.pop_back();
-				index++;
-			}
+		text += keysEntered;
+		int index = m_currentKeyIndex;
+		while (index < 0) {
+			popBackString(text);
+			index++;
 		}
+
 		const std::string tempString = text + std::string("|");
 
 		SDL_Color white = {255, 255, 255, 255};
 		m_renderBackend->drawRect(x, y, w, h, color);
 		m_renderBackend->drawText(x, y, w, white, tempString);
 
-		if (keysStr.size()) {
+		if (keysEntered.size()) {
 			return true;
 		}
 		return false;
