@@ -32,7 +32,6 @@ bool PokedexScreen::initialize(RenderContext *context)
 
 	// initialize the user interface
 	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
-	SDL_StartTextInput();
 	return true;
 }
 

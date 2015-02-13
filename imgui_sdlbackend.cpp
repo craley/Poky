@@ -24,11 +24,32 @@ namespace imgui {
 	void SDLRenderBackend::drawText(int x, int y, int w, SDL_Color color, const std::string &text)
 	{
 		SDL_Texture *textTexture = getTextRenderTexture(m_renderer, m_font, text, color, w);
-		Sprite sprite(textTexture);
-		sprite.setPosition(x, y);
-		SDL_Rect dest = sprite.rect();
-		SDL_RenderCopyEx(m_renderer, textTexture, nullptr, &dest,
-				sprite.angle(), nullptr, SDL_FLIP_NONE);
+		SDL_Texture *textShadowTexture = getTextRenderTexture(m_renderer, m_font, text, {0, 0, 0, 255}, w);
+		SDL_SetTextureAlphaMod(textShadowTexture, 90);
+
+
+		// render the shadow
+		{
+			Sprite sprite(textShadowTexture);
+			sprite.setPosition(x+2, y+2);
+			SDL_Rect dest = sprite.rect();
+			SDL_RenderCopyEx(m_renderer, textShadowTexture, nullptr, &dest,
+					sprite.angle(), nullptr, SDL_FLIP_NONE);
+		}
+
+		// render the text
+		{
+			Sprite sprite(textTexture);
+			sprite.setPosition(x, y);
+			SDL_Rect dest = sprite.rect();
+			SDL_RenderCopyEx(m_renderer, textTexture, nullptr, &dest,
+					sprite.angle(), nullptr, SDL_FLIP_NONE);
+		}
+
+
+		// TODO: create texture cache
+		SDL_DestroyTexture(textTexture);
+		SDL_DestroyTexture(textShadowTexture);
 	}
 
 } // namespace imgui

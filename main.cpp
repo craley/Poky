@@ -36,6 +36,7 @@ int main(int, char**)
 	SDL_Event sdlEvent;
 	bool sdlQuit = false;
 	int currentScreen = 0;
+	SDL_StartTextInput();
 
 	while (!sdlQuit) {
 		// Poll for events
