@@ -467,7 +467,12 @@ void PokemonData::PokemonData_::setType(int typeID1, int typeID2)
 void PokemonData::PokemonData_::setType(const std::string& type1, const std::string& type2)
 {
 	m_typeID1 = getTypeID(type1);
-	m_typeID2 = getTypeID(type2);
+	if(type2.compare("")){
+		m_typeID2 = getTypeID(type2);
+	}
+	else{
+		m_typeID2 = 0;
+	}
 }
 
 std::vector<int> PokemonData::PokemonData_::getTypesWeakTo()

@@ -43,7 +43,7 @@ public:
 	int getTypeID(const std::string& type);
 
 	void setType(int typeID1, int typeID2 = 0);
-	void setType(const std::string& type1, const std::string& type2);
+	void setType(const std::string& type1, const std::string& type2 = "");
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
