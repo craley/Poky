@@ -11,7 +11,7 @@ namespace imgui {
 		int hotItem = -1;
 		int activeItem = -1;
 		bool mouseDown = false;
-		char keysEntered[8] = {0,0,0,0,0,0,0,0};
+		std::string keysEntered;
 
 		void begin();
 		void end();
