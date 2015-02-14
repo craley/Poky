@@ -33,7 +33,7 @@ public:
 	int getTypeID1();
 	int getTypeID2();
 	//if this pokemon is attacked, this is what the damage will be multiplied by
-	double typeDamageMultiplier(int typeID);
+	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
@@ -43,7 +43,7 @@ public:
 	int getTypeID(const std::string& type);
 
 	void setType(int typeID1, int typeID2 = 0);
-	void setType(const std::string& type1, const std::string& type2);
+	void setType(const std::string& type1, const std::string& type2 = "");
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();

@@ -6,6 +6,7 @@
 #include <vector>
 #include <sqlite3.h>
 #include "PokemonData.hpp"
+#include "sqlstmts.hpp"
 
 class PokemonData::PokemonData_
 {
@@ -31,7 +32,7 @@ public:
 	int getTypeID1();
 	int getTypeID2();
 	//if this pokemon is attacked, this is what the damage will be multiplied by
-	double typeDamageMultiplier(int typeID);
+	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
@@ -158,17 +159,96 @@ PokemonData::PokemonData_::PokemonData_()
 		std::cerr << "Error: Failed to create typeID statement" << std::endl;
 		exit(1);
 	}
-
-	loadSQLFile(&m_typeWeakStmt, "pokemon weak to.sql");
-	loadSQLFile(&m_typeResistStmt, "pokemon resistant to.sql");
-	loadSQLFile(&m_typeImmuneStmt, "pokemon immune to.sql");
-	loadSQLFile(&m_typeNormalStmt, "pokemon normal to.sql");
-	loadSQLFile(&m_typeX2WeakStmt, "pokemon x2 weak to.sql");
-	loadSQLFile(&m_typeX2ResistStmt, "pokemon x2 resistant to.sql");
-	loadSQLFile(&m_typeX4WeakStmt, "pokemon x4 weak to.sql");
-	loadSQLFile(&m_typeX4ResistStmt, "pokemon x4 resistant to.sql");
-	loadSQLFile(&m_typeDoubleImmuneStmt, "pokemon double immune to.sql");
-	loadSQLFile(&m_typeDoubleNormalStmt, "pokemon double normal to.sql");
+	if(sqlite3_prepare_v2(
+			m_connection,
+			doubleImmuneToSQL.c_str(),
+			doubleImmuneToSQL.size(),
+			&m_typeDoubleImmuneStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create doubleImmuneTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			doubleNormalToSQL.c_str(),
+			doubleNormalToSQL.size(),
+			&m_typeDoubleNormalStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create doubleNormalTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			immuneToSQL.c_str(),
+			immuneToSQL.size(),
+			&m_typeImmuneStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create immuneTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			normalToSQL.c_str(),
+			normalToSQL.size(),
+			&m_typeNormalStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create normalTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			resistantToSQL.c_str(),
+			resistantToSQL.size(),
+			&m_typeResistStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create resistantTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			weakToSQL.c_str(),
+			weakToSQL.size(),
+			&m_typeWeakStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create weakTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			x2ResistantToSQL.c_str(),
+			x2ResistantToSQL.size(),
+			&m_typeX2ResistStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create x2ResistantTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			x2WeakToSQL.c_str(),
+			x2WeakToSQL.size(),
+			&m_typeX2WeakStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create x2WeakTo statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			x4ResistantToSQL.c_str(),
+			x4ResistantToSQL.size(),
+			&m_typeX4ResistStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create x4ResistStmt statement" << std::endl;
+		exit(1);
+	}
+	if(sqlite3_prepare_v2(
+			m_connection,
+			x4WeakToSQL.c_str(),
+			x4WeakToSQL.size(),
+			&m_typeX4WeakStmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: Failed to create x4WeakTo statement" << std::endl;
+		exit(1);
+	}
 
 	sqlite3_stmt* numPokemonStmt;
 	if(sqlite3_prepare_v2(
@@ -263,28 +343,6 @@ void PokemonData::PokemonData_::execStmts(int id)
 	}
 	else{
 		std::cerr << "Error: Failed to step pokemonTypeStmt a second time" << std::endl;
-		exit(1);
-	}
-}
-
-void PokemonData::PokemonData_::loadSQLFile(sqlite3_stmt** stmt, const char* fileName)
-{
-	std::fstream file;
-	std::stringstream query;
-
-	file.open(fileName, std::ios_base::in);
-	if(!file.is_open()){
-		std::cerr << "Error: Failed to open SQL file" << std::endl;
-		exit(1);
-	}
-	query << file.rdbuf();
-	if(sqlite3_prepare_v2(
-			m_connection,
-			query.str().c_str(),
-			-1,
-			stmt,
-			nullptr) != SQLITE_OK){
-		std::cerr << "Error: Failed to create statement from SQL file" << std::endl;
 		exit(1);
 	}
 }
@@ -424,11 +482,10 @@ size_t PokemonData::PokemonData_::numPokemon()
 	return m_numPokemon;
 }
 
-double PokemonData::PokemonData_::typeDamageMultiplier(int typeID)
-{
-	//TODO: actually make typeDamageMultiplier() do something
-	return 0;
-}
+//double PokemonData::PokemonData_::typeDamageMultiplier(int typeID)
+//{
+//	return 0;
+//}
 
 std::string PokemonData::PokemonData_::getTypeName(int typeID)
 {
@@ -467,7 +524,12 @@ void PokemonData::PokemonData_::setType(int typeID1, int typeID2)
 void PokemonData::PokemonData_::setType(const std::string& type1, const std::string& type2)
 {
 	m_typeID1 = getTypeID(type1);
-	m_typeID2 = getTypeID(type2);
+	if(type2.compare("")){
+		m_typeID2 = getTypeID(type2);
+	}
+	else{
+		m_typeID2 = 0;
+	}
 }
 
 std::vector<int> PokemonData::PokemonData_::getTypesWeakTo()
@@ -608,10 +670,10 @@ int PokemonData::getTypeID2()
 	return impl->getTypeID2();
 }
 
-double PokemonData::typeDamageMultiplier(int typeID)
-{
-	return impl->typeDamageMultiplier(typeID);
-}
+//double PokemonData::typeDamageMultiplier(int typeID)
+//{
+//	return impl->typeDamageMultiplier(typeID);
+//}
 
 size_t PokemonData::numPokemon()
 {
