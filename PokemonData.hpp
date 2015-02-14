@@ -33,7 +33,7 @@ public:
 	int getTypeID1();
 	int getTypeID2();
 	//if this pokemon is attacked, this is what the damage will be multiplied by
-	double typeDamageMultiplier(int typeID);
+	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
