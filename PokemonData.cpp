@@ -31,8 +31,6 @@ public:
 	double getWeight();
 	int getTypeID1();
 	int getTypeID2();
-	//if this pokemon is attacked, this is what the damage will be multiplied by
-	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
@@ -46,8 +44,8 @@ public:
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
-	std::vector<int> getTypesResistentTo();
-	std::vector<int> getTypesDoubleResistentTo();
+	std::vector<int> getTypesresistantTo();
+	std::vector<int> getTypesDoubleresistantTo();
 	std::vector<int> getTypesImmuneTo();
 	std::vector<int> getTypesDamagedNormallyBy();
 	size_t numTypes();
@@ -74,11 +72,11 @@ private:
 	sqlite3_stmt* m_typeDoubleImmuneStmt;
 	sqlite3_stmt* m_typeDoubleNormalStmt;
 
-	int m_numPokemon;
+	size_t m_numPokemon;
 	int m_ID;
 	int m_pokemonTypeID1;
 	int m_pokemonTypeID2;
-	int m_numTypes;
+	size_t m_numTypes;
 	int m_typeID1;
 	int m_typeID2;
 
@@ -482,11 +480,6 @@ size_t PokemonData::PokemonData_::numPokemon()
 	return m_numPokemon;
 }
 
-//double PokemonData::PokemonData_::typeDamageMultiplier(int typeID)
-//{
-//	return 0;
-//}
-
 std::string PokemonData::PokemonData_::getTypeName(int typeID)
 {
 	sqlite3_reset(m_typeStmt);
@@ -548,7 +541,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesDoubleWeakTo()
 		return std::vector<int>();
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesResistentTo()
+std::vector<int> PokemonData::PokemonData_::getTypesresistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX2ResistStmt, 8);
@@ -556,7 +549,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesResistentTo()
 		return getTypes(m_typeResistStmt, 1);
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesDoubleResistentTo()
+std::vector<int> PokemonData::PokemonData_::getTypesDoubleresistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX4ResistStmt, 6);
@@ -578,6 +571,11 @@ std::vector<int> PokemonData::PokemonData_::getTypesDamagedNormallyBy()
 		return getTypes(m_typeDoubleNormalStmt, 6);
 	else
 		return getTypes(m_typeNormalStmt, 3);
+}
+
+size_t PokemonData::PokemonData_::numTypes()
+{
+	return m_numTypes;
 }
 
 PokemonData::PokemonData()
@@ -670,11 +668,6 @@ int PokemonData::getTypeID2()
 	return impl->getTypeID2();
 }
 
-//double PokemonData::typeDamageMultiplier(int typeID)
-//{
-//	return impl->typeDamageMultiplier(typeID);
-//}
-
 size_t PokemonData::numPokemon()
 {
 	return impl->numPokemon();
@@ -710,14 +703,14 @@ std::vector<int> PokemonData::getTypesDoubleWeakTo()
 	return impl->getTypesDoubleWeakTo();
 }
 
-std::vector<int> PokemonData::getTypesResistentTo()
+std::vector<int> PokemonData::getTypesresistantTo()
 {
-	return impl->getTypesResistentTo();
+	return impl->getTypesresistantTo();
 }
 
-std::vector<int> PokemonData::getTypesDoubleResistentTo()
+std::vector<int> PokemonData::getTypesDoubleresistantTo()
 {
-	return impl->getTypesDoubleResistentTo();
+	return impl->getTypesDoubleresistantTo();
 }
 
 std::vector<int> PokemonData::getTypesImmuneTo()
@@ -728,4 +721,9 @@ std::vector<int> PokemonData::getTypesImmuneTo()
 std::vector<int> PokemonData::getTypesDamagedNormallyBy()
 {
 	return impl->getTypesDamagedNormallyBy();
+}
+
+size_t PokemonData::numTypes()
+{
+	return impl->numTypes();
 }
