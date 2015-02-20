@@ -44,8 +44,8 @@ public:
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
-	std::vector<int> getTypesresistantTo();
-	std::vector<int> getTypesDoubleresistantTo();
+	std::vector<int> getTypesResistantTo();
+	std::vector<int> getTypesDoubleResistantTo();
 	std::vector<int> getTypesImmuneTo();
 	std::vector<int> getTypesDamagedNormallyBy();
 	size_t numTypes();
@@ -624,7 +624,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesDoubleWeakTo()
 		return std::vector<int>();
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesresistantTo()
+std::vector<int> PokemonData::PokemonData_::getTypesResistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX2ResistStmt, 8);
@@ -632,7 +632,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesresistantTo()
 		return getTypes(m_typeResistStmt, 1);
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesDoubleresistantTo()
+std::vector<int> PokemonData::PokemonData_::getTypesDoubleResistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX4ResistStmt, 6);
@@ -791,14 +791,14 @@ std::vector<int> PokemonData::getTypesDoubleWeakTo()
 	return impl->getTypesDoubleWeakTo();
 }
 
-std::vector<int> PokemonData::getTypesresistantTo()
+std::vector<int> PokemonData::getTypesResistantTo()
 {
-	return impl->getTypesresistantTo();
+	return impl->getTypesResistantTo();
 }
 
-std::vector<int> PokemonData::getTypesDoubleresistantTo()
+std::vector<int> PokemonData::getTypesDoubleResistantTo()
 {
-	return impl->getTypesDoubleresistantTo();
+	return impl->getTypesDoubleResistantTo();
 }
 
 std::vector<int> PokemonData::getTypesImmuneTo()

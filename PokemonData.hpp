@@ -45,8 +45,8 @@ public:
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
-	std::vector<int> getTypesresistantTo();
-	std::vector<int> getTypesDoubleresistantTo();
+	std::vector<int> getTypesResistantTo();
+	std::vector<int> getTypesDoubleResistantTo();
 	std::vector<int> getTypesImmuneTo();
 	std::vector<int> getTypesDamagedNormallyBy();
  	size_t numTypes();
