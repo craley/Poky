@@ -7,7 +7,7 @@
 class PokemonData
 {
 public:
-	struct PokemonCharacteristics;
+	struct Characteristics;
 
 	PokemonData();
 	~PokemonData();
@@ -35,7 +35,7 @@ public:
 	//number of pokemon in the database
 	size_t numPokemon();
 
-	//std::vector<int> getPokemonWithCharacteristics(const PokemonCharacteristics& characteristics);
+	std::vector<int> getPokemonWithCharacteristics(const Characteristics& characteristics);
 
 	std::string getTypeName(int typeID);
 	int getTypeID(const std::string& type);
@@ -55,10 +55,8 @@ public:
 	//that exactly match the min characteristic instead of searching within a range of values
 	//setting a max characteristic to negative will search for pokemon from min to infinity.
 	//by default, this structure is initialized to list every pokemon.
-	struct PokemonCharacteristics
+	struct Characteristics
 	{
- 		PokemonCharacteristics();
-
  		//ignored if empty
 		std::string nameSubStr;
 		//ignored if empty
@@ -79,7 +77,7 @@ public:
 		double heightMax = -1;
 		double weightMin = 0;
 		double weightMax = -1;
-		//initialized with every type from 1-numTypes()
+		//ignored if empty
 		std::vector<int> hasType;
 		//if true, searches for all pokemon that has every type characteristic you inputed
 		//if false, searches for all pokemon that has at least one of the type characteristics you inputed
