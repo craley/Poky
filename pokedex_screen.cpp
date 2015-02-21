@@ -42,6 +42,7 @@ void PokedexScreen::setPokedexData(int id)
 	}
 
 	m_pokeData.setPokemon(id);
+	m_pokeData.setType(m_pokeData.getTypeID1(), m_pokeData.getTypeID2());
 	// Pokemon data
 	{
 		std::string txt = "Name: " + m_pokeData.getName()
@@ -49,8 +50,81 @@ void PokedexScreen::setPokedexData(int id)
 			+ "\n" + "Base Att: " + std::to_string(m_pokeData.getBaseAtt())
 			+ "\n" + "Base Def: " + std::to_string(m_pokeData.getBaseDef())
 			+ "\n" + "Base Sp Att: " + std::to_string(m_pokeData.getBaseSpAtt())
-			+ "\n" + "Base Sp Def: " + std::to_string(m_pokeData.getBaseSpDef())
-			+ "\n\n" + m_pokeData.getFlavorText();
+			+ "\n" + "Base Sp Def: " + std::to_string(m_pokeData.getBaseSpDef());
+			//+ "\n\n" + m_pokeData.getFlavorText();
+
+		txt.append("\n\nWeak To: ");
+		{
+			std::vector<int> weakTo = m_pokeData.getTypesWeakTo();
+			std::vector<int>::const_iterator it = weakTo.begin();
+			if(it != weakTo.end()){
+				while(it != weakTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
+		txt.append("\nDouble Weak To: ");
+		{
+			std::vector<int> doubleWeakTo = m_pokeData.getTypesDoubleWeakTo();
+			std::vector<int>::const_iterator it = doubleWeakTo.begin();
+			if(it != doubleWeakTo.end()){
+				while(it != doubleWeakTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
+		txt.append("\nResistant To: ");
+		{
+			std::vector<int> resistantTo = m_pokeData.getTypesResistantTo();
+			std::vector<int>::const_iterator it = resistantTo.begin();
+			if(it != resistantTo.end()){
+				while(it != resistantTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
+		txt.append("\nDouble Resistant To: ");
+		{
+			std::vector<int> doubleResistantTo = m_pokeData.getTypesDoubleResistantTo();
+			std::vector<int>::const_iterator it = doubleResistantTo.begin();
+			if(it != doubleResistantTo.end()){
+				while(it != doubleResistantTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
+		txt.append("\nImmune To: ");
+		{
+			std::vector<int> immuneTo = m_pokeData.getTypesImmuneTo();
+			std::vector<int>::const_iterator it = immuneTo.begin();
+			if(it != immuneTo.end()){
+				while(it != immuneTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
+		txt.append("\nDamaged Normally by: ");
+		{
+			std::vector<int> normalTo = m_pokeData.getTypesDamagedNormallyBy();
+			std::vector<int>::const_iterator it = normalTo.begin();
+			if(it != normalTo.end()){
+				while(it != normalTo.end()-1){
+					txt.append(m_pokeData.getTypeName(*it) + ", ");
+					++it;
+				}
+				txt.append(m_pokeData.getTypeName(*it));
+			}
+		}
 
 		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt);
 		m_pokemonName.setImage(m_textTexture);
@@ -60,7 +134,7 @@ void PokedexScreen::setPokedexData(int id)
 	{
 		m_pokemonImage = m_context->loadTexture(m_pokeData.getSpriteLocation());
 		m_pokemonImage.setScale(3.0f);
-		m_pokemonImage.setPosition(0, 100);
+		m_pokemonImage.setPosition(0, 200);
 	}
 }
 
@@ -84,14 +158,14 @@ void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
 			switch (sdlEvent.key.keysym.sym) {
 				case SDLK_EQUALS:
 				case SDLK_KP_PLUS:
-					m_currentPokemonID = (m_currentPokemonID % 150) + 1;
+					m_currentPokemonID = (m_currentPokemonID % m_pokeData.numPokemon()) + 1;
 					setPokedexData(m_currentPokemonID);
 					break;
 				case SDLK_MINUS:
 				case SDLK_KP_MINUS:
 					m_currentPokemonID--;
 					if (m_currentPokemonID < 1) {
-						m_currentPokemonID = 151;
+						m_currentPokemonID = m_pokeData.numPokemon();
 					}
 					setPokedexData(m_currentPokemonID);
 					break;
@@ -113,7 +187,7 @@ void PokedexScreen::frameStep(unsigned long)
 	m_context->render(m_pokemonImage);
 
 	m_userInterface.begin();
-	if (m_userInterface.textField(1, 20, 300, 200, 20, m_textField)) {
+	if (m_userInterface.textField(1, 400, 300, 200, 20, m_textField)) {
 	}
 	m_userInterface.end();
 
