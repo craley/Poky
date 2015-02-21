@@ -31,12 +31,10 @@ public:
 	double getWeight();
 	int getTypeID1();
 	int getTypeID2();
-	//if this pokemon is attacked, this is what the damage will be multiplied by
-	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
-	std::vector<int> getPokemonWithCharacteristics(const PokemonCharacteristics& characteristics);
+	std::vector<int> getPokemonWithCharacteristics(const Characteristics& characteristics);
 
 	std::string getTypeName(int typeID);
 	int getTypeID(const std::string& type);
@@ -46,8 +44,8 @@ public:
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
-	std::vector<int> getTypesResistentTo();
-	std::vector<int> getTypesDoubleResistentTo();
+	std::vector<int> getTypesResistantTo();
+	std::vector<int> getTypesDoubleResistantTo();
 	std::vector<int> getTypesImmuneTo();
 	std::vector<int> getTypesDamagedNormallyBy();
 	size_t numTypes();
@@ -74,11 +72,11 @@ private:
 	sqlite3_stmt* m_typeDoubleImmuneStmt;
 	sqlite3_stmt* m_typeDoubleNormalStmt;
 
-	int m_numPokemon;
+	size_t m_numPokemon;
 	int m_ID;
 	int m_pokemonTypeID1;
 	int m_pokemonTypeID2;
-	int m_numTypes;
+	size_t m_numTypes;
 	int m_typeID1;
 	int m_typeID2;
 
@@ -482,10 +480,88 @@ size_t PokemonData::PokemonData_::numPokemon()
 	return m_numPokemon;
 }
 
-//double PokemonData::PokemonData_::typeDamageMultiplier(int typeID)
-//{
-//	return 0;
-//}
+std::vector<int> PokemonData::PokemonData_::getPokemonWithCharacteristics(const Characteristics& characteristics)
+{
+	//1=1 is just a dumb hack so I don't have to worry about which condition comes first for
+	//the placements of the "and"s and "or"s.
+	std::string queryStr = "select idPokemon from Pokemon where 1=1 ";
+	std::vector<int> result;
+
+	if(!characteristics.nameSubStr.empty()){
+		queryStr.append("and name like '%" + characteristics.nameSubStr + "%' ");
+	}
+	if(!characteristics.nameStartsWith.empty()){
+		queryStr.append("and name like '" + characteristics.nameStartsWith + "%' ");
+	}
+	queryStr.append("and baseHP >= " + std::to_string(characteristics.baseHPMin) + " ");
+	if(characteristics.baseHPMax >= 0){
+		queryStr.append("and baseHP <= " + std::to_string(characteristics.baseHPMax) + " ");
+	}
+	queryStr.append("and baseAttack >= " + std::to_string(characteristics.baseAttMin) + " ");
+	if(characteristics.baseAttMax >= 0){
+		queryStr.append("and baseAttack <= " + std::to_string(characteristics.baseAttMax) + " ");
+	}
+	queryStr.append("and baseDefense >= " + std::to_string(characteristics.baseDefMin) + " ");
+	if(characteristics.baseDefMax >= 0){
+		queryStr.append("and baseDefense <= " + std::to_string(characteristics.baseDefMax) + " ");
+	}
+	queryStr.append("and baseSpAttack >= " + std::to_string(characteristics.baseSpAttMin) + " ");
+	if(characteristics.baseSpAttMax >= 0){
+		queryStr.append("and baseSpAttack <= " + std::to_string(characteristics.baseSpAttMax) + " ");
+	}
+	queryStr.append("and baseSpDefense >= " + std::to_string(characteristics.baseSpDefMin) + " ");
+	if(characteristics.baseSpDefMax >= 0){
+		queryStr.append("and baseSpDefense <= " + std::to_string(characteristics.baseSpDefMax) + " ");
+	}
+	queryStr.append("and baseSpeed >= " + std::to_string(characteristics.baseSpeedMin) + " ");
+	if(characteristics.baseSpeedMax >= 0){
+		queryStr.append("and baseSpeed <= " + std::to_string(characteristics.baseSpeedMax) + " ");
+	}
+	queryStr.append("and height >= " + std::to_string(characteristics.heightMin) + " ");
+	if(characteristics.heightMax >= 0){
+		queryStr.append("and height <= " + std::to_string(characteristics.heightMax) + " ");
+	}
+	queryStr.append("and weight >= " + std::to_string(characteristics.weightMin) + " ");
+	if(characteristics.weightMax >= 0){
+		queryStr.append("and weight <= " + std::to_string(characteristics.weightMax) + " ");
+	}
+	if(!characteristics.hasType.empty()){
+		std::vector<int>::const_iterator it = characteristics.hasType.begin();
+		queryStr.append("intersect select idPokemon from Pokemon_Has_Type where idType = " + std::to_string(*it++) + " ");
+		if(characteristics.typesUsingAnd){
+			while(it != characteristics.hasType.end()){
+				queryStr.append("intersect select idPokemon from Pokemon_Has_Type where idType = " + std::to_string(*it++) + " ");
+			}
+		}
+		else{
+			while(it != characteristics.hasType.end()){
+				queryStr.append("or idType = " + std::to_string(*it++) + " ");
+			}
+		}
+	}
+	int flag = 0;
+	sqlite3_stmt* stmt;
+	if(sqlite3_prepare_v2(m_connection,
+			queryStr.c_str(),
+			queryStr.size(),
+			&stmt,
+			nullptr) != SQLITE_OK){
+		std::cerr << "Error: could not prepare characteristics stmt" << std::endl;
+		exit(1);
+	}
+	while((flag = sqlite3_step(stmt)) != SQLITE_DONE){
+		if(flag == SQLITE_ROW){
+			result.emplace_back(sqlite3_column_int(stmt, 0));
+		}
+		else{
+			std::cerr << "Error: could not step through characteristics stmt" << std::endl;
+			exit(1);
+		}
+	}
+	sqlite3_finalize(stmt);
+
+	return result;
+}
 
 std::string PokemonData::PokemonData_::getTypeName(int typeID)
 {
@@ -548,7 +624,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesDoubleWeakTo()
 		return std::vector<int>();
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesResistentTo()
+std::vector<int> PokemonData::PokemonData_::getTypesResistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX2ResistStmt, 8);
@@ -556,7 +632,7 @@ std::vector<int> PokemonData::PokemonData_::getTypesResistentTo()
 		return getTypes(m_typeResistStmt, 1);
 }
 
-std::vector<int> PokemonData::PokemonData_::getTypesDoubleResistentTo()
+std::vector<int> PokemonData::PokemonData_::getTypesDoubleResistantTo()
 {
 	if(m_typeID2)
 		return getTypes(m_typeX4ResistStmt, 6);
@@ -578,6 +654,11 @@ std::vector<int> PokemonData::PokemonData_::getTypesDamagedNormallyBy()
 		return getTypes(m_typeDoubleNormalStmt, 6);
 	else
 		return getTypes(m_typeNormalStmt, 3);
+}
+
+size_t PokemonData::PokemonData_::numTypes()
+{
+	return m_numTypes;
 }
 
 PokemonData::PokemonData()
@@ -670,14 +751,14 @@ int PokemonData::getTypeID2()
 	return impl->getTypeID2();
 }
 
-//double PokemonData::typeDamageMultiplier(int typeID)
-//{
-//	return impl->typeDamageMultiplier(typeID);
-//}
-
 size_t PokemonData::numPokemon()
 {
 	return impl->numPokemon();
+}
+
+std::vector<int> PokemonData::getPokemonWithCharacteristics(const Characteristics& characteristics)
+{
+	return impl->getPokemonWithCharacteristics(characteristics);
 }
 
 std::string PokemonData::getTypeName(int typeID)
@@ -710,14 +791,14 @@ std::vector<int> PokemonData::getTypesDoubleWeakTo()
 	return impl->getTypesDoubleWeakTo();
 }
 
-std::vector<int> PokemonData::getTypesResistentTo()
+std::vector<int> PokemonData::getTypesResistantTo()
 {
-	return impl->getTypesResistentTo();
+	return impl->getTypesResistantTo();
 }
 
-std::vector<int> PokemonData::getTypesDoubleResistentTo()
+std::vector<int> PokemonData::getTypesDoubleResistantTo()
 {
-	return impl->getTypesDoubleResistentTo();
+	return impl->getTypesDoubleResistantTo();
 }
 
 std::vector<int> PokemonData::getTypesImmuneTo()
@@ -728,4 +809,9 @@ std::vector<int> PokemonData::getTypesImmuneTo()
 std::vector<int> PokemonData::getTypesDamagedNormallyBy()
 {
 	return impl->getTypesDamagedNormallyBy();
+}
+
+size_t PokemonData::numTypes()
+{
+	return impl->numTypes();
 }
