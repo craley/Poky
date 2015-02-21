@@ -51,8 +51,12 @@ void PokedexScreen::setPokedexData(int id)
 			+ "\n" + "Base Def: " + std::to_string(m_pokeData.getBaseDef())
 			+ "\n" + "Base Sp Att: " + std::to_string(m_pokeData.getBaseSpAtt())
 			+ "\n" + "Base Sp Def: " + std::to_string(m_pokeData.getBaseSpDef());
-			//+ "\n\n" + m_pokeData.getFlavorText();
 
+		txt.append("\nTypes: " + m_pokeData.getTypeName(m_pokeData.getTypeID1()));
+		if(m_pokeData.getTypeID2() != 0){
+			txt.append(", " + m_pokeData.getTypeName(m_pokeData.getTypeID2()));
+		}
+		txt.append("\n\n"  + m_pokeData.getFlavorText());
 		txt.append("\n\nWeak To: ");
 		{
 			std::vector<int> weakTo = m_pokeData.getTypesWeakTo();
@@ -133,8 +137,8 @@ void PokedexScreen::setPokedexData(int id)
 	// Pokemon image
 	{
 		m_pokemonImage = m_context->loadTexture(m_pokeData.getSpriteLocation());
-		m_pokemonImage.setScale(3.0f);
-		m_pokemonImage.setPosition(0, 200);
+		m_pokemonImage.setScale(2.0f);
+		m_pokemonImage.setPosition(25, 300);
 	}
 }
 
@@ -187,7 +191,7 @@ void PokedexScreen::frameStep(unsigned long)
 	m_context->render(m_pokemonImage);
 
 	m_userInterface.begin();
-	if (m_userInterface.textField(1, 400, 300, 200, 20, m_textField)) {
+	if (m_userInterface.textField(1, 400, 400, 200, 20, m_textField)) {
 	}
 	m_userInterface.end();
 
