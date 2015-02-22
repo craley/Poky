@@ -7,7 +7,7 @@
 class PokemonData
 {
 public:
-	struct PokemonCharacteristics;
+	struct Characteristics;
 
 	PokemonData();
 	~PokemonData();
@@ -32,12 +32,10 @@ public:
 	double getWeight();
 	int getTypeID1();
 	int getTypeID2();
-	//if this pokemon is attacked, this is what the damage will be multiplied by
-	//double typeDamageMultiplier(int typeID);
 	//number of pokemon in the database
 	size_t numPokemon();
 
-	//std::vector<int> getPokemonWithCharacteristics(const PokemonCharacteristics& characteristics);
+	std::vector<int> getPokemonWithCharacteristics(const Characteristics& characteristics);
 
 	std::string getTypeName(int typeID);
 	int getTypeID(const std::string& type);
@@ -47,50 +45,44 @@ public:
 
 	std::vector<int> getTypesWeakTo();
 	std::vector<int> getTypesDoubleWeakTo();
-	std::vector<int> getTypesResistentTo();
-	std::vector<int> getTypesDoubleResistentTo();
+	std::vector<int> getTypesResistantTo();
+	std::vector<int> getTypesDoubleResistantTo();
 	std::vector<int> getTypesImmuneTo();
 	std::vector<int> getTypesDamagedNormallyBy();
- 	//size_t numTypes();
+ 	size_t numTypes();
 
 	//a max characteristic that is lower than corresponding min characteristic will search for pokemon
 	//that exactly match the min characteristic instead of searching within a range of values
 	//setting a max characteristic to negative will search for pokemon from min to infinity.
-	/*struct PokemonCharacteristics
+	//by default, this structure is initialized to list every pokemon.
+	struct Characteristics
 	{
-		PokemonCharacteristics()
-			: baseHPMin(0), baseHPMax(-1), baseAttMin(0), baseAttMax(-1), baseDefMin(0), baseDefMax(-1),
-			  baseSpAttMin(0), baseSpAttMax(-1), baseSpDefMin(0), baseSpDefMax(-1), baseSpeedMin(0),
-			  baseSpeedMax(-1), heightMin(0), heightMax(-1), weightMin(0), weightMax(-1), typesUsingAnd(true) {}
-
+ 		//ignored if empty
 		std::string nameSubStr;
+		//ignored if empty
 		std::string nameStartsWith;
-		int baseHPMin;
-		int baseHPMax;
-		int baseAttMin;
-		int baseAttMax;
-		int baseDefMin;
-		int baseDefMax;
-		int baseSpAttMin;
-		int baseSpAttMax;
-		int baseSpDefMin;
-		int baseSpDefMax;
-		int baseSpeedMin;
-		int baseSpeedMax;
-		double heightMin;
-		double heightMax;
-		double weightMin;
-		double weightMax;
+		int baseHPMin = 0;
+		int baseHPMax = -1;
+		int baseAttMin = 0;
+		int baseAttMax = -1;
+		int baseDefMin = 0;
+		int baseDefMax = -1;
+		int baseSpAttMin = 0;
+		int baseSpAttMax = -1;
+		int baseSpDefMin = 0;
+		int baseSpDefMax = -1;
+		int baseSpeedMin = 0;
+		int baseSpeedMax = -1;
+		double heightMin = 0;
+		double heightMax = -1;
+		double weightMin = 0;
+		double weightMax = -1;
+		//ignored if empty
 		std::vector<int> hasType;
-		std::vector<int> isWeakTo;
-		std::vector<int> isDoubleWeakTo;
-		std::vector<int> isResistantTo;
-		std::vector<int> isDoubleResistantTo;
-		std::vector<int> isImmuneTo;
 		//if true, searches for all pokemon that has every type characteristic you inputed
 		//if false, searches for all pokemon that has at least one of the type characteristics you inputed
-		bool typesUsingAnd;
-	};*/
+		bool typesUsingAnd = false;
+	};
 
 private:
 	class PokemonData_;
