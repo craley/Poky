@@ -22,7 +22,7 @@ private:
 	bool m_dexDance = false;
 	int m_initialHeight = 0;
 
-	SDL_Rect m_textDest = EMPTY_RECT;
+	SDL_Rect m_textDest;
 
 	TTF_Font *m_font = nullptr;
 	SDL_Texture *m_textTexture = nullptr;

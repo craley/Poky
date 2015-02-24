@@ -57,7 +57,6 @@ namespace imgui {
 				break;
 			case SDL_TEXTEDITING:
 				m_cursor = sdlEvent.edit.start;
-				std::cout << "text editing event\n";
 				break;
 		}
 	}
