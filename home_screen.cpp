@@ -16,6 +16,8 @@ using options::WINDOW_HEIGHT;
 
 bool HomeScreen::initialize(RenderContext *context)
 {
+	m_textDest.x = 0; m_textDest.y = 0; m_textDest.w = 0; m_textDest.h = 0;
+
 	if (!Screen::initialize(context)) {
 		return false;
 	}
