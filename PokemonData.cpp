@@ -482,10 +482,57 @@ size_t PokemonData::PokemonData_::numPokemon()
 
 std::vector<int> PokemonData::PokemonData_::getPokemonWithCharacteristics(const Characteristics& characteristics)
 {
+	enum
+	{
+		HP,
+		ATT,
+		DEF,
+		SP_ATT,
+		SP_DEF,
+		SPEED,
+		WEIGHT,
+		HEIGHT,
+		NUM_CHARACTERISTICS //always keeep on bottom
+	};
+	enum
+	{
+		MIN,
+		MAX
+	};
+
 	//1=1 is just a dumb hack so I don't have to worry about which condition comes first for
 	//the placements of the "and"s and "or"s.
 	std::string queryStr = "select idPokemon from Pokemon where 1=1 ";
 	std::vector<int> result;
+
+	std::string subQuery[NUM_CHARACTERISTICS][2];
+	subQuery[HP][MAX] = "and baseHP <= " + std::to_string(characteristics.baseHPMax) + " ";
+	subQuery[HP][MIN] = "and baseHP >= " + std::to_string(characteristics.baseHPMin) + " ";
+	subQuery[ATT][MAX] = "and baseAttack <= " + std::to_string(characteristics.baseAttMax) + " ";
+	subQuery[ATT][MIN] = "and baseAttack >= " + std::to_string(characteristics.baseAttMin) + " ";
+	subQuery[DEF][MAX] = "and baseDefense <= " + std::to_string(characteristics.baseDefMax) + " ";
+	subQuery[DEF][MIN] = "and baseDefense >= " + std::to_string(characteristics.baseDefMin) + " ";
+	subQuery[SP_ATT][MAX] = "and baseSpAttack <= " + std::to_string(characteristics.baseSpAttMax) + " ";
+	subQuery[SP_ATT][MIN] = "and baseSpAttack >= " + std::to_string(characteristics.baseSpAttMin) + " ";
+	subQuery[SP_DEF][MAX] = "and baseSpDefense <= " + std::to_string(characteristics.baseSpDefMax) + " ";
+	subQuery[SP_DEF][MIN] = "and baseSpDefense >= " + std::to_string(characteristics.baseSpDefMin) + " ";
+	subQuery[SPEED][MAX] = "and baseSpeed <= " + std::to_string(characteristics.baseSpeedMax) + " ";
+	subQuery[SPEED][MIN] = "and baseSpeed >= " + std::to_string(characteristics.baseSpeedMin) + " ";
+	subQuery[WEIGHT][MAX] = "and weight <= " + std::to_string(characteristics.weightMax) + " ";
+	subQuery[WEIGHT][MIN] = "and weight >= " + std::to_string(characteristics.weightMin) + " ";
+	subQuery[HEIGHT][MAX] = "and height <= " + std::to_string(characteristics.heightMax) + " ";
+	subQuery[HEIGHT][MIN] = "and height >= " + std::to_string(characteristics.heightMin) + " ";
+
+	bool maxBelowMin[NUM_CHARACTERISTICS];
+	maxBelowMin[HP] = characteristics.baseHPMax <= characteristics.baseHPMin;
+	maxBelowMin[ATT] = characteristics.baseAttMax <= characteristics.baseAttMin;
+	maxBelowMin[DEF] = characteristics.baseDefMax <= characteristics.baseDefMin;
+	maxBelowMin[SP_ATT] = characteristics.baseSpAttMax <= characteristics.baseSpAttMin;
+	maxBelowMin[SP_DEF] = characteristics.baseSpDefMax <= characteristics.baseSpDefMin;
+	maxBelowMin[SPEED] = characteristics.baseSpeedMax <= characteristics.baseSpeedMin;
+	maxBelowMin[WEIGHT] = characteristics.weightMax <= characteristics.weightMin;
+	maxBelowMin[HEIGHT] = characteristics.heightMax <= characteristics.heightMin;
+
 
 	if(!characteristics.nameSubStr.empty()){
 		queryStr.append("and name like '%" + characteristics.nameSubStr + "%' ");
@@ -493,37 +540,11 @@ std::vector<int> PokemonData::PokemonData_::getPokemonWithCharacteristics(const 
 	if(!characteristics.nameStartsWith.empty()){
 		queryStr.append("and name like '" + characteristics.nameStartsWith + "%' ");
 	}
-	queryStr.append("and baseHP >= " + std::to_string(characteristics.baseHPMin) + " ");
-	if(characteristics.baseHPMax >= 0){
-		queryStr.append("and baseHP <= " + std::to_string(characteristics.baseHPMax) + " ");
-	}
-	queryStr.append("and baseAttack >= " + std::to_string(characteristics.baseAttMin) + " ");
-	if(characteristics.baseAttMax >= 0){
-		queryStr.append("and baseAttack <= " + std::to_string(characteristics.baseAttMax) + " ");
-	}
-	queryStr.append("and baseDefense >= " + std::to_string(characteristics.baseDefMin) + " ");
-	if(characteristics.baseDefMax >= 0){
-		queryStr.append("and baseDefense <= " + std::to_string(characteristics.baseDefMax) + " ");
-	}
-	queryStr.append("and baseSpAttack >= " + std::to_string(characteristics.baseSpAttMin) + " ");
-	if(characteristics.baseSpAttMax >= 0){
-		queryStr.append("and baseSpAttack <= " + std::to_string(characteristics.baseSpAttMax) + " ");
-	}
-	queryStr.append("and baseSpDefense >= " + std::to_string(characteristics.baseSpDefMin) + " ");
-	if(characteristics.baseSpDefMax >= 0){
-		queryStr.append("and baseSpDefense <= " + std::to_string(characteristics.baseSpDefMax) + " ");
-	}
-	queryStr.append("and baseSpeed >= " + std::to_string(characteristics.baseSpeedMin) + " ");
-	if(characteristics.baseSpeedMax >= 0){
-		queryStr.append("and baseSpeed <= " + std::to_string(characteristics.baseSpeedMax) + " ");
-	}
-	queryStr.append("and height >= " + std::to_string(characteristics.heightMin) + " ");
-	if(characteristics.heightMax >= 0){
-		queryStr.append("and height <= " + std::to_string(characteristics.heightMax) + " ");
-	}
-	queryStr.append("and weight >= " + std::to_string(characteristics.weightMin) + " ");
-	if(characteristics.weightMax >= 0){
-		queryStr.append("and weight <= " + std::to_string(characteristics.weightMax) + " ");
+	for(int i=0; i<NUM_CHARACTERISTICS; ++i){
+		queryStr.append(subQuery[i][MIN]);
+		if(!maxBelowMin[i]){
+			queryStr.append(subQuery[i][MAX]);
+		}
 	}
 	if(!characteristics.hasType.empty()){
 		std::vector<int>::const_iterator it = characteristics.hasType.begin();
