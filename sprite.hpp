@@ -5,11 +5,9 @@
 #include <SDL_ttf.h>
 
 
-#define EMPTY_RECT {0, 0, 0, 0}
-
 class Sprite {
 public:
-	Sprite() {};
+	Sprite();
 	Sprite(SDL_Texture *texture);
 
 	void setImage(SDL_Texture *texture);
@@ -28,7 +26,7 @@ private:
 	float m_angle = 0.0f;
 	float m_scaleX = 1.0f;
 	float m_scaleY = 1.0f;
-	SDL_Rect m_destRect = EMPTY_RECT;
-	SDL_Rect m_sourceRect = EMPTY_RECT;
+	SDL_Rect m_destRect;
+	SDL_Rect m_sourceRect;
 	SDL_Texture *m_texture = nullptr;
 };

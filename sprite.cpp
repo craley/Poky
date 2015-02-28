@@ -7,6 +7,13 @@
 #include "texture.hpp"
 
 
+Sprite::Sprite()
+{
+	// God damn windows
+	m_destRect.x = 0; m_destRect.y = 0; m_destRect.w = 0; m_destRect.h = 0;
+	m_sourceRect.x = 0; m_sourceRect.y = 0; m_sourceRect.w = 0; m_sourceRect.h = 0;
+}
+
 Sprite::Sprite(SDL_Texture *texture)
 {
 	setImage(texture);
