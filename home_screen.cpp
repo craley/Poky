@@ -14,11 +14,11 @@
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
 
-bool HomeScreen::initialize(RenderContext *context)
+bool HomeScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher)
 {
 	m_textDest.x = 0; m_textDest.y = 0; m_textDest.w = 0; m_textDest.h = 0;
 
-	if (!Screen::initialize(context)) {
+	if (!Screen::initialize(context, dispatcher)) {
 		return false;
 	}
 
@@ -153,7 +153,7 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 	}
 
 	if (m_userInterface.clickedSprite(2, m_pokedexSprite)) {
-		std::cout << "clicked\n";
+		m_screenDispatcher->setToPokedexScreen();	
 	}
 
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);

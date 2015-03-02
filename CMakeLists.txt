@@ -35,6 +35,7 @@ add_executable(
 	sprite.cpp
 	texture.cpp
 	PokemonData.cpp
+	screen_dispatcher.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SQLITE3_LIBRARIES})
