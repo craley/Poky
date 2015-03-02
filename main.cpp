@@ -12,16 +12,12 @@
 #include "render_context.hpp"
 #include "home_screen.hpp"
 #include "pokedex_screen.hpp"
-#include "sqlite3.h"
-
-using options::WINDOW_WIDTH;
-using options::WINDOW_HEIGHT;
 
 int main(int, char**)
 {
 	RenderContext context;
 	std::vector<std::unique_ptr<Screen>> screens;
-	screens.emplace_back(new HomeScreen); // avoid copy
+	screens.emplace_back(new HomeScreen);
 	screens.emplace_back(new PokedexScreen);
 
 	if (!context.initalizeSDL()) {

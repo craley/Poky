@@ -68,6 +68,25 @@ namespace imgui {
 		return true;
 	}
 
+	bool UIState::clickedSprite(int id, const Sprite &sprite) {
+		if (mouseOverSprite(sprite)) {
+			hotItem = id;
+			if (activeItem == 0 && mouseDown) {
+				activeItem = id;
+			}
+		}
+
+		if (hotItem == id && activeItem == id && !mouseDown) {
+			return true;
+		}
+		return false;
+	}
+
+	bool UIState::mouseOverSprite(const Sprite &sprite) {
+		SDL_Rect rect = sprite.rect();
+		return mouseHit(rect.x, rect.y, rect.w, rect.h);
+	}
+
 	void UIState::setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend)
 	{
 		m_renderBackend = std::move(renderBackend);
