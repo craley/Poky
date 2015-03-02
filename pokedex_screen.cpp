@@ -14,9 +14,9 @@
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
 
-bool PokedexScreen::initialize(RenderContext *context)
+bool PokedexScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher)
 {
-	if (!Screen::initialize(context)) {
+	if (!Screen::initialize(context, dispatcher)) {
 		return false;
 	}
 

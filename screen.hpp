@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include "screen_dispatcher.hpp"
 
 class Screen {
 // I prefer POD, but for this project, it may be too complex
@@ -11,9 +12,10 @@ public:
 
 	virtual ~Screen() {}
 	// defer initialization because of emplace_back noexcept
-	virtual bool initialize(RenderContext *context)
+	virtual bool initialize(RenderContext *context, ScreenDispatcher *dispatcher)
 	{
 		m_context = context;
+		m_screenDispatcher = dispatcher;
 		return true;
 	}
 	virtual void handleEvent(const SDL_Event &) {}
@@ -21,4 +23,5 @@ public:
 
 protected:
 	RenderContext *m_context;
+	ScreenDispatcher *m_screenDispatcher;
 };

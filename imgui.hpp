@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "imgui_renderbackend.hpp"
+#include "sprite.hpp"
 
 namespace imgui {
 	class UIState {
@@ -16,6 +17,8 @@ namespace imgui {
 		void begin();
 		void end();
 
+		bool clickedSprite(int id, const Sprite &sprite);
+		bool mouseOverSprite(const Sprite &sprite);
 		bool mouseHit(int x, int y, int w, int h);
 		bool button(int id, int x, int y, int w, int h);
 		bool textField(int id, int x, int y, int w, int h, std::string &text);

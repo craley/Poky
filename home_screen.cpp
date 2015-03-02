@@ -14,11 +14,11 @@
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
 
-bool HomeScreen::initialize(RenderContext *context)
+bool HomeScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher)
 {
 	m_textDest.x = 0; m_textDest.y = 0; m_textDest.w = 0; m_textDest.h = 0;
 
-	if (!Screen::initialize(context)) {
+	if (!Screen::initialize(context, dispatcher)) {
 		return false;
 	}
 
@@ -134,13 +134,30 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 	m_context->render(m_cartridgeQuiz);
 	m_context->render(m_pokedexSprite);
 
-	// Render the user interface
+	// User interface controls
 	m_userInterface.begin();
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
 		m_dexDance = !m_dexDance;
 	}
 
+	if (m_userInterface.mouseOverSprite(m_pokedexSprite)) {
+		m_dexDance = true;
+	} else {
+		m_dexDance = false;
+	}
+
+	if (m_userInterface.mouseOverSprite(m_pokedexSprite) && m_userInterface.mouseDown) {
+		m_pokedexSprite.setScale(4);
+	} else {
+		m_pokedexSprite.setScale(5);
+	}
+
+	if (m_userInterface.clickedSprite(2, m_pokedexSprite)) {
+		m_screenDispatcher->setToPokedexScreen();	
+	}
+
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
 	m_userInterface.end();
+
 	SDL_RenderPresent(m_context->renderer);
 }
