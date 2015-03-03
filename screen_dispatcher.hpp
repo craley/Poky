@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <SDL.h>
+#include <memory>
 #include "render_context.hpp"
 
 class Screen;
