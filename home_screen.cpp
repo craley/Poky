@@ -116,11 +116,6 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 		m_pokedexSprite.setAngle(angle + (0 - angle) * 10.0f * deltaS);
 	}
 
-	// Render image screen elements
-	m_context->render(m_cartridgePokemonSnap);
-	m_context->render(m_cartridgeQuiz);
-	m_context->render(m_pokedexSprite);
-
 	// User interface controls
 	m_userInterface.begin();
 	if (m_userInterface.button(1, m_textDest.x, m_textDest.y, m_textDest.w, m_textDest.h)) {
@@ -146,6 +141,11 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 	if (m_userInterface.clickedSprite(2, m_pokedexSprite)) {
 		m_screenDispatcher->setToPokedexScreen();	
 	}
+
+	// Render image screen elements
+	m_context->render(m_cartridgePokemonSnap);
+	m_context->render(m_cartridgeQuiz);
+	m_context->render(m_pokedexSprite);
 
 	SDL_RenderCopy(m_context->renderer, m_textTexture, nullptr, &m_textDest);
 	m_userInterface.end();

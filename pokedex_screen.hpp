@@ -22,10 +22,18 @@ private:
 	imgui::UIState m_userInterface;
 	TTF_Font *m_font;
 	SDL_Texture *m_textTexture = nullptr;
+	SDL_Texture *m_textTestTexture = nullptr;
+	SDL_Texture *m_windowTarget = nullptr;
+
 	PokemonData m_pokeData;
 	std::string m_textField;
+
 	Sprite m_pokemonImage;
 	Sprite m_pokemonName;
+	Sprite m_window;
+	Sprite m_textTest;
 
+	float m_scroll = 0;
 	int m_currentPokemonID;
+	int m_totalPokemon = 0;
 };

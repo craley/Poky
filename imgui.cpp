@@ -158,4 +158,38 @@ namespace imgui {
 		}
 		return false;
 	}
+
+	bool UIState::scrollBar(int id, int x, int y, int h, int max, float *val)
+	{
+		const SDL_Color color = {225, 0, 0, 255};
+		const int width = 16, height = 24;
+		int ypos = ((h - height) * (*val)) / max;
+
+		if (mouseHit(x, ypos, width, height)) {
+			hotItem = id;
+			if (activeItem == 0 && mouseDown) {
+				activeItem = id;
+			}
+		}
+
+		m_renderBackend->drawRect(x, y + ypos, width, height, color);
+
+		if (activeItem == id) {
+			int mousePos = mouseY - y;
+			if (mousePos < 0) {
+				mousePos = 0;
+			} else if (mousePos + height > h) {
+				mousePos = h - height;
+			}
+			float tempValue = (mousePos*max) / h;
+			if (*val != tempValue) {
+				*val = tempValue;
+				return true;
+			}
+		}
+
+
+		return false;
+	}
+
 } // namespace imgui
