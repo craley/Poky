@@ -62,23 +62,12 @@ bool HomeScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher
 		m_pokeball.setScale(0.5f);
 	}
 
-	// Test text for the button
-	{
-		m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
-		if (m_font == nullptr) {
-			std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
-			return false;
-		}
-
-		const std::string txt = "Female: \u2640, Male: \u2642";
-		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt,
-				SDL_Color{0, 0, 0, 255});
-
-		int textWidth, textHeight;
-		SDL_QueryTexture(m_textTexture, nullptr, nullptr, &textWidth, &textHeight);
-		SDL_Rect dexRect = m_pokedexSprite.rect();
-		m_initialHeight = WINDOW_HEIGHT/2 + dexRect.h/2 + textWidth/2;
-		m_textDest  = {WINDOW_WIDTH/2 - textWidth/2, m_initialHeight, textWidth, textHeight};
+	// Font initialization
+	// TODO: move to render context - stephen
+	m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
+	if (m_font == nullptr) {
+		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
+		return false;
 	}
 
 	SDL_SetRenderDrawColor(context->renderer, 75, 67, 142, 255);
@@ -93,9 +82,6 @@ void HomeScreen::handleEvent(const SDL_Event &sdlEvent)
 
 HomeScreen::~HomeScreen()
 {
-	SDL_DestroyTexture(m_pokedexSprite.texture());
-	SDL_DestroyTexture(m_cartridgePokemonSnap.texture());
-	SDL_DestroyTexture(m_textTexture);
 }
 
 void HomeScreen::frameStep(unsigned long elapsedMS)
@@ -149,8 +135,12 @@ void HomeScreen::frameStep(unsigned long elapsedMS)
 
 	if (m_userInterface.mouseOverSprite(m_pokedexSprite) && m_userInterface.mouseDown) {
 		m_pokedexSprite.setScale(4);
+		SDL_Rect dexRect = m_pokedexSprite.rect();
+		m_pokedexSprite.setPosition(WINDOW_WIDTH/2 - dexRect.w/2, WINDOW_HEIGHT/3 - dexRect.h/2);
 	} else {
 		m_pokedexSprite.setScale(5);
+		SDL_Rect dexRect = m_pokedexSprite.rect();
+		m_pokedexSprite.setPosition(WINDOW_WIDTH/2 - dexRect.w/2, WINDOW_HEIGHT/3 - dexRect.h/2);
 	}
 
 	if (m_userInterface.clickedSprite(2, m_pokedexSprite)) {
