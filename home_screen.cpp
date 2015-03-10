@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <memory>
 
 #include <SDL.h>
 #include <SDL_image.h>
