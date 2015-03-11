@@ -256,7 +256,7 @@ void PokedexScreen::frameStep(unsigned long)
 	}
 
 	// scroll
-	if (m_userInterface.scrollBar(2, 204, 154+20, WINDOW_HEIGHT-(155+20)-4-24, m_totalPokemon*10, &m_scroll)) {
+	if (m_userInterface.scrollBar(2, 204, 154+20, WINDOW_HEIGHT-(155+20)-4-24, m_totalPokemon*15, &m_scroll)) {
 		m_textTest.setPosition(2, -m_scroll+2);
 	}
 	m_userInterface.end();

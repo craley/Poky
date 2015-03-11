@@ -163,9 +163,9 @@ namespace imgui {
 	{
 		const SDL_Color color = {225, 0, 0, 255};
 		const int width = 16, height = 24;
-		int ypos = ((h - height) * (*val)) / max;
+		int ypos = (h * (*val)) / max;
 
-		if (mouseHit(x, ypos, width, height)) {
+		if (mouseHit(x, y + ypos, width, height)) {
 			hotItem = id;
 			if (activeItem == 0 && mouseDown) {
 				activeItem = id;
@@ -178,8 +178,8 @@ namespace imgui {
 			int mousePos = mouseY - y;
 			if (mousePos < 0) {
 				mousePos = 0;
-			} else if (mousePos + height > h) {
-				mousePos = h - height;
+			} else if (mousePos > h) {
+				mousePos = h;
 			}
 			float tempValue = (mousePos*max) / h;
 			if (*val != tempValue) {
@@ -187,7 +187,6 @@ namespace imgui {
 				return true;
 			}
 		}
-
 
 		return false;
 	}
