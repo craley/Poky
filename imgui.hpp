@@ -11,6 +11,7 @@ namespace imgui {
 		int mouseY = 0;
 		int hotItem = -1;
 		int activeItem = -1;
+		int scrollWheel = 0;
 		bool mouseDown = false;
 		std::string keysEntered;
 

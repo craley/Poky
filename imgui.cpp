@@ -24,6 +24,7 @@ namespace imgui {
 		}
 		keysEntered = "";
 		m_currentKeyIndex = 0;
+		scrollWheel = 0;
 	}
 
 	void UIState::handleEvent(const SDL_Event &sdlEvent)
@@ -42,6 +43,9 @@ namespace imgui {
 				if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
 					mouseDown = false;
 				}
+				break;
+			case SDL_MOUSEWHEEL:
+				scrollWheel += sdlEvent.wheel.y;
 				break;
 			case SDL_TEXTINPUT:
 				keysEntered += sdlEvent.text.text;
@@ -174,6 +178,8 @@ namespace imgui {
 
 		m_renderBackend->drawRect(x, y + ypos, width, height, color);
 
+		// todo only update based on scroll-wheel when window is active
+
 		if (activeItem == id) {
 			int mousePos = mouseY - y;
 			if (mousePos < 0) {
@@ -186,6 +192,15 @@ namespace imgui {
 				*val = tempValue;
 				return true;
 			}
+		} else if (scrollWheel) {
+			int tempValue = *val + (scrollWheel*max)/h;
+			if (tempValue > max) {
+				tempValue = max;
+			} else if (tempValue < 0) {
+				tempValue = 0;
+			}
+			*val = tempValue;
+			return true;
 		}
 
 		return false;
