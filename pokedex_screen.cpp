@@ -131,7 +131,7 @@ void PokedexScreen::setPokedexData(int id)
 			}
 		}
 
-		const SDL_Color white({255, 255, 255, 255});
+		const SDL_Color white = {255, 255, 255, 255};
 		int textStartX = WINDOW_WIDTH/3;
 		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt, white, WINDOW_WIDTH - textStartX);
 		m_pokemonName.setImage(m_textTexture);
@@ -166,7 +166,7 @@ void PokedexScreen::setPokedexData(int id)
 
 	// Create text for window
 	{
-		const SDL_Color white({255, 255, 255, 255});
+		const SDL_Color white = {255, 255, 255, 255};
 
 		PokemonData::Characteristics characteristics;
 		auto pokeList = m_pokeData.getPokemonWithCharacteristics(characteristics);
