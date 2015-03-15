@@ -63,6 +63,9 @@ void RenderContext::destroy()
 	if (window) {
 		SDL_DestroyWindow(window);
 	}
+	for (auto &k : m_textureCache) {
+		SDL_DestroyTexture(k.second);
+	}
 	SDL_Quit();
 }
 

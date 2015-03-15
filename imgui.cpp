@@ -24,6 +24,7 @@ namespace imgui {
 		}
 		keysEntered = "";
 		m_currentKeyIndex = 0;
+		scrollWheel = 0;
 	}
 
 	void UIState::handleEvent(const SDL_Event &sdlEvent)
@@ -42,6 +43,9 @@ namespace imgui {
 				if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
 					mouseDown = false;
 				}
+				break;
+			case SDL_MOUSEWHEEL:
+				scrollWheel += sdlEvent.wheel.y;
 				break;
 			case SDL_TEXTINPUT:
 				keysEntered += sdlEvent.text.text;
@@ -66,6 +70,25 @@ namespace imgui {
 		if (mouseX < x || mouseY < y || mouseX >= x + w || mouseY >= y + h)
 			return false;
 		return true;
+	}
+
+	bool UIState::clickedSprite(int id, const Sprite &sprite) {
+		if (mouseOverSprite(sprite)) {
+			hotItem = id;
+			if (activeItem == 0 && mouseDown) {
+				activeItem = id;
+			}
+		}
+
+		if (hotItem == id && activeItem == id && !mouseDown) {
+			return true;
+		}
+		return false;
+	}
+
+	bool UIState::mouseOverSprite(const Sprite &sprite) {
+		SDL_Rect rect = sprite.rect();
+		return mouseHit(rect.x, rect.y, rect.w, rect.h);
 	}
 
 	void UIState::setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend)
@@ -139,4 +162,48 @@ namespace imgui {
 		}
 		return false;
 	}
+
+	bool UIState::scrollBar(int id, int x, int y, int h, int max, float *val)
+	{
+		const SDL_Color color = {225, 0, 0, 255};
+		const int width = 16, height = 24;
+		int ypos = (h * (*val)) / max;
+
+		if (mouseHit(x, y + ypos, width, height)) {
+			hotItem = id;
+			if (activeItem == 0 && mouseDown) {
+				activeItem = id;
+			}
+		}
+
+		m_renderBackend->drawRect(x, y + ypos, width, height, color);
+
+		// todo only update based on scroll-wheel when window is active
+
+		if (activeItem == id) {
+			int mousePos = mouseY - y;
+			if (mousePos < 0) {
+				mousePos = 0;
+			} else if (mousePos > h) {
+				mousePos = h;
+			}
+			float tempValue = (mousePos*max) / h;
+			if (*val != tempValue) {
+				*val = tempValue;
+				return true;
+			}
+		} else if (scrollWheel) {
+			int tempValue = *val + (scrollWheel*max)/h;
+			if (tempValue > max) {
+				tempValue = max;
+			} else if (tempValue < 0) {
+				tempValue = 0;
+			}
+			*val = tempValue;
+			return true;
+		}
+
+		return false;
+	}
+
 } // namespace imgui

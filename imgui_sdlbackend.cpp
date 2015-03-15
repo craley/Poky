@@ -46,7 +46,6 @@ namespace imgui {
 					sprite.angle(), nullptr, SDL_FLIP_NONE);
 		}
 
-
 		// TODO: create texture cache
 		SDL_DestroyTexture(textTexture);
 		SDL_DestroyTexture(textShadowTexture);
