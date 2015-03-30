@@ -11,6 +11,7 @@ namespace imgui {
 		int mouseY = 0;
 		int hotItem = -1;
 		int activeItem = -1;
+		int scrollWheel = 0;
 		bool mouseDown = false;
 		std::string keysEntered;
 
@@ -22,6 +23,7 @@ namespace imgui {
 		bool mouseHit(int x, int y, int w, int h);
 		bool button(int id, int x, int y, int w, int h);
 		bool textField(int id, int x, int y, int w, int h, std::string &text);
+		bool scrollBar(int id, int x, int y, int h, int max, float *val);
 		void handleEvent(const SDL_Event &event);
 		void setRenderBackend(std::unique_ptr<RenderBackend> &&renderBackend); 
 	private:

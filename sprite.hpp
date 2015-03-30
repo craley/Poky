@@ -4,6 +4,9 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
+struct Point {
+	int x, y;
+};
 
 class Sprite {
 public:

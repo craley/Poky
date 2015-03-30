@@ -43,6 +43,7 @@ void PokedexScreen::setPokedexData(int id)
 
 	m_pokeData.setPokemon(id);
 	m_pokeData.setType(m_pokeData.getTypeID1(), m_pokeData.getTypeID2());
+
 	// Pokemon data
 	{
 		std::string txt = "Name: " + m_pokeData.getName()
@@ -130,15 +131,58 @@ void PokedexScreen::setPokedexData(int id)
 			}
 		}
 
-		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt);
+		const SDL_Color white = {255, 255, 255, 255};
+		int textStartX = WINDOW_WIDTH/3;
+		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt, white, WINDOW_WIDTH - textStartX);
 		m_pokemonName.setImage(m_textTexture);
+		m_pokemonName.setPosition(WINDOW_WIDTH/3, 0);
 	}
 
 	// Pokemon image
 	{
 		m_pokemonImage = m_context->loadTexture(m_pokeData.getSpriteLocation());
+		m_pokemonImage.setPosition(0, 0);
 		m_pokemonImage.setScale(2.0f);
-		m_pokemonImage.setPosition(25, 300);
+	}
+
+	// Create window
+	{
+		m_windowTarget = SDL_CreateTexture(m_context->renderer,
+			SDL_PIXELFORMAT_RGBA8888,
+			SDL_TEXTUREACCESS_TARGET,
+			200, WINDOW_HEIGHT-(155+20)-4);
+
+		uint8_t r, g, b, a;
+		SDL_GetRenderDrawColor(m_context->renderer, &r, &g, &b, &a);
+		SDL_SetRenderDrawColor(m_context->renderer, 128, 0, 128, 255);
+		SDL_SetRenderTarget(m_context->renderer, m_windowTarget);
+		SDL_RenderClear(m_context->renderer);
+		SDL_SetRenderTarget(m_context->renderer, nullptr);
+		SDL_SetRenderDrawColor(m_context->renderer, r, g, b, a);
+
+		m_window.setImage(m_windowTarget);
+		m_window.setPosition(4, 154+20);
+	}
+
+	// Create text for window
+	{
+		const SDL_Color white = {255, 255, 255, 255};
+
+		PokemonData::Characteristics characteristics;
+		auto pokeList = m_pokeData.getPokemonWithCharacteristics(characteristics);
+		m_totalPokemon = static_cast<int>(pokeList.size());
+
+		std::string names;
+		for (auto i : pokeList) {
+			m_pokeData.setPokemon(i);
+			names += m_pokeData.getName() + "\n";
+		}
+		m_textTestTexture = getTextRenderTexture(
+			m_context->renderer,
+			m_font,
+			names, white, 200+4+2);
+		m_textTest.setImage(m_textTestTexture);
+		m_textTest.setPosition(2, 2);
 	}
 }
 
@@ -182,6 +226,7 @@ void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
 
 PokedexScreen::~PokedexScreen()
 {
+	SDL_DestroyTexture(m_windowTarget);
 }
 
 void PokedexScreen::frameStep(unsigned long)
@@ -191,7 +236,28 @@ void PokedexScreen::frameStep(unsigned long)
 	m_context->render(m_pokemonImage);
 
 	m_userInterface.begin();
-	if (m_userInterface.textField(1, 400, 400, 200, 20, m_textField)) {
+	if (m_userInterface.textField(1, 4, 150, 200, 20, m_textField)) {
+	}
+
+	// window
+	{
+		SDL_SetRenderTarget(m_context->renderer, m_window.texture());
+		uint8_t r, g, b, a;
+		SDL_GetRenderDrawColor(m_context->renderer, &r, &g, &b, &a);
+		SDL_SetRenderDrawColor(m_context->renderer, 128, 0, 128, 255);
+
+		SDL_RenderClear(m_context->renderer);
+		m_context->render(m_textTest);
+
+		SDL_SetRenderDrawColor(m_context->renderer, r, g, b, a);
+		SDL_SetRenderTarget(m_context->renderer, nullptr);
+
+		m_context->render(m_window);
+	}
+
+	// scroll
+	if (m_userInterface.scrollBar(2, 204, 154+20, WINDOW_HEIGHT-(155+20)-4-24, m_totalPokemon*15, &m_scroll)) {
+		m_textTest.setPosition(2, -m_scroll+2);
 	}
 	m_userInterface.end();
 
