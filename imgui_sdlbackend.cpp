@@ -51,4 +51,15 @@ namespace imgui {
 		SDL_DestroyTexture(textShadowTexture);
 	}
 
+	void SDLRenderBackend::drawTexture(int x, int y, int w, int h, SDL_Texture *texture)
+	{
+		SDL_Rect dest({x, y, w, h});
+		SDL_RenderCopyEx(m_renderer, texture, nullptr, &dest,
+				0, nullptr, SDL_FLIP_NONE);
+	}
+
+	void SDLRenderBackend::setRenderTarget(SDL_Texture *texture)
+	{
+		SDL_SetRenderTarget(m_renderer, texture);
+	}
 } // namespace imgui

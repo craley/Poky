@@ -21,7 +21,11 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(Sqlite3 REQUIRED)
 
-include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR})
+set(GWORK_INCLUDE_DIR ${pokedex_SOURCE_DIR}/thirdparty/GWork/gwen/include/)
+set(GWORK_LIBRARIES ${pokedex_SOURCE_DIR}/thirdparty/GWork/gwen/lib/macosx/gmake/libgwen_static.a ${pokedex_SOURCE_DIR}/thirdparty/GWork/gwen/lib/macosx/gmake/libGWEN-Renderer-SDL2.a)
+set(GWORK_UNIT_TEST_LIBRARIES ${pokedex_SOURCE_DIR}/thirdparty/GWork/gwen/lib/macosx/gmake/libunittest.a)
+
+include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR} ${GWORK_INCLUDE_DIR})
 include_directories(include)
 
 add_executable(
@@ -38,5 +42,6 @@ add_executable(
 	screen_dispatcher.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SQLITE3_LIBRARIES})
+MESSAGE(${SDL2_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SQLITE3_LIBRARIES} ${GWORK_LIBRARIES} ${GWORK_UNIT_TEST_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${BIN_DIR})

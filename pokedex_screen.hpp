@@ -9,6 +9,13 @@
 #include "sprite.hpp"
 #include "PokemonData.hpp"
 
+#include <Gwen/Gwen.h>
+#include <Gwen/Skins/Simple.h>
+#include <Gwen/Skins/TexturedBase.h>
+#include <Gwen/UnitTest/UnitTest.h>
+#include <Gwen/Input/SDL2.h>
+#include <Gwen/Renderers/SDL2.h>
+
 class PokedexScreen : public Screen {
 public:
 	~PokedexScreen();
@@ -33,7 +40,13 @@ private:
 	Sprite m_window;
 	Sprite m_textTest;
 
-	float m_scroll = 0;
 	int m_currentPokemonID;
 	int m_totalPokemon = 0;
+
+	// GWEN Stuff
+	Gwen::Renderer::SDL2 *m_gwenRenderer = nullptr;
+	Gwen::Controls::Canvas *m_gwenCanvas = nullptr;
+	Gwen::Skin::TexturedBase *m_gwenSkin;
+	UnitTest *m_gwenUnitTest = nullptr;
+    Gwen::Input::SDL2 m_gwenInput;
 };

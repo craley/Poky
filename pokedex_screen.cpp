@@ -32,6 +32,23 @@ bool PokedexScreen::initialize(RenderContext *context, ScreenDispatcher *dispatc
 
 	// initialize the user interface
 	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
+
+    m_gwenRenderer = new Gwen::Renderer::SDL2(m_context->window, m_context->renderer);
+	m_gwenSkin = new Gwen::Skin::TexturedBase(m_gwenRenderer);
+    m_gwenSkin->SetRender(m_gwenRenderer);
+    m_gwenSkin->Init("assets/DefaultSkin.png");
+    m_gwenSkin->SetDefaultFont("assets/DroidSansMono.ttf", 11);
+    
+    m_gwenCanvas = new Gwen::Controls::Canvas(m_gwenSkin);
+    m_gwenCanvas->SetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    m_gwenCanvas->SetDrawBackground(true);
+    m_gwenCanvas->SetBackgroundColor(Gwen::Color(150, 170, 170, 255));
+
+    // Create our unittest control (which is a Window with controls in it)
+    m_gwenUnitTest = new UnitTest(m_gwenCanvas);
+    //m_gwenUnitTest->SetPos(10, 10);
+    m_gwenInput.Initialize(m_gwenCanvas);
+
 	return true;
 }
 
@@ -221,45 +238,25 @@ void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
 			break;
 	}
 
+	m_gwenInput.ProcessEvent(const_cast<SDL_Event*>(&sdlEvent));
 	m_userInterface.handleEvent(sdlEvent);
 }
 
 PokedexScreen::~PokedexScreen()
 {
+	delete m_gwenCanvas;
+	delete m_gwenSkin;
+	delete m_gwenRenderer;
+
 	SDL_DestroyTexture(m_windowTarget);
 }
 
 void PokedexScreen::frameStep(unsigned long)
 {
 	SDL_RenderClear(m_context->renderer);
-	m_context->render(m_pokemonName);
-	m_context->render(m_pokemonImage);
 
-	m_userInterface.begin();
-	if (m_userInterface.textField(1, 4, 150, 200, 20, m_textField)) {
-	}
-
-	// window
-	{
-		SDL_SetRenderTarget(m_context->renderer, m_window.texture());
-		uint8_t r, g, b, a;
-		SDL_GetRenderDrawColor(m_context->renderer, &r, &g, &b, &a);
-		SDL_SetRenderDrawColor(m_context->renderer, 128, 0, 128, 255);
-
-		SDL_RenderClear(m_context->renderer);
-		m_context->render(m_textTest);
-
-		SDL_SetRenderDrawColor(m_context->renderer, r, g, b, a);
-		SDL_SetRenderTarget(m_context->renderer, nullptr);
-
-		m_context->render(m_window);
-	}
-
-	// scroll
-	if (m_userInterface.scrollBar(2, 204, 154+20, WINDOW_HEIGHT-(155+20)-4-24, m_totalPokemon*15, &m_scroll)) {
-		m_textTest.setPosition(2, -m_scroll+2);
-	}
-	m_userInterface.end();
+	m_gwenRenderer->BeginContext(NULL);
+	m_gwenCanvas->RenderCanvas();
 
 	SDL_RenderPresent(m_context->renderer);
 }
