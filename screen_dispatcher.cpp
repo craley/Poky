@@ -2,11 +2,13 @@
 #include "render_context.hpp"
 #include "pokedex_screen.hpp"
 #include "home_screen.hpp"
+#include "snap_screen.hpp"
 
 bool ScreenDispatcher::initialize()
 {
 	m_screens.emplace_back(new HomeScreen);
 	m_screens.emplace_back(new PokedexScreen);
+	m_screens.emplace_back(new SnapScreen);
 
 	if (!m_context.initalizeSDL()) {
 		return false;
@@ -42,7 +44,10 @@ void ScreenDispatcher::tick()
 						m_currentScreen = 0;
 					} else if (sdlEvent.key.keysym.sym == SDLK_F2) {
 						m_currentScreen = 1;
+					} else if (sdlEvent.key.keysym.sym == SDLK_F3) {
+						m_currentScreen = 2;
 					}
+
 					break;
 			}
 
