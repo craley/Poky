@@ -9,12 +9,15 @@
 #include "sprite.hpp"
 #include "PokemonData.hpp"
 
-#include <Gwen/Gwen.h>
+#include <Gwen/Utility.h>
 #include <Gwen/Skins/Simple.h>
 #include <Gwen/Skins/TexturedBase.h>
 #include <Gwen/UnitTest/UnitTest.h>
 #include <Gwen/Input/SDL2.h>
 #include <Gwen/Renderers/SDL2.h>
+
+class Pokedex;
+class PokemonList;
 
 class PokedexScreen : public Screen {
 public:
@@ -26,12 +29,6 @@ public:
 	void setPokedexData(int id);
 
 private:
-	imgui::UIState m_userInterface;
-	TTF_Font *m_font;
-	SDL_Texture *m_textTexture = nullptr;
-	SDL_Texture *m_textTestTexture = nullptr;
-	SDL_Texture *m_windowTarget = nullptr;
-
 	PokemonData m_pokeData;
 	std::string m_textField;
 
@@ -46,7 +43,8 @@ private:
 	// GWEN Stuff
 	Gwen::Renderer::SDL2 *m_gwenRenderer = nullptr;
 	Gwen::Controls::Canvas *m_gwenCanvas = nullptr;
-	Gwen::Skin::TexturedBase *m_gwenSkin;
-	UnitTest *m_gwenUnitTest = nullptr;
+	Gwen::Skin::TexturedBase *m_gwenSkin = nullptr;
+	Pokedex *m_pokedexBase= nullptr;
+
     Gwen::Input::SDL2 m_gwenInput;
 };
