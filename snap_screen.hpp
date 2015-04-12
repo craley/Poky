@@ -21,24 +21,35 @@ public:
     
     void generateSprite();
     long to_millis(int minutes, int seconds);
+	std::string to_time(long millis);
     int getRandom(int low, int high);
+    SDL_Texture* textToTexture(std::string, SDL_Color);
+    SDL_Texture* imageToTexture(std::string path);
     
 private:
     imgui::UIState m_userInterface;
     
-    //timer text box
     TTF_Font *font;
+    
     SDL_Texture *timerTexture = nullptr;
     std::string timerText;
     SDL_Rect timerRect;
+    SDL_Color red = { 255, 0, 0, 0 };
     
-    //sprites
-    Sprite background;
-    Sprite simpleSrite;
+    SDL_Texture *scoreTexture = nullptr;
+    std::string scoreText;
+    SDL_Rect scoreRect;
+    SDL_Color blue = { 0, 0, 255, 0 };
+    
+    SDL_Texture *background;
+    
+    Sprite simpleSprite;
 
     int score;
     std::clock_t time;
     long countdown;
+    
+    bool spriteVisible;
     
     //Mouse pointer
     //int cursor_x;
