@@ -1,0 +1,25 @@
+var namespace_gwen_1_1_control_factory_1_1_properties =
+[
+    [ "ControlName", "class_gwen_1_1_control_factory_1_1_properties_1_1_control_name.html", null ],
+    [ "Position", "class_gwen_1_1_control_factory_1_1_properties_1_1_position.html", null ],
+    [ "Margin", "class_gwen_1_1_control_factory_1_1_properties_1_1_margin.html", null ],
+    [ "Size", "class_gwen_1_1_control_factory_1_1_properties_1_1_size.html", null ],
+    [ "Dock", "class_gwen_1_1_control_factory_1_1_properties_1_1_dock.html", null ],
+    [ "CheckboxText", "class_gwen_1_1_control_factory_1_1_properties_1_1_checkbox_text.html", null ],
+    [ "FileType", "class_gwen_1_1_control_factory_1_1_properties_1_1_file_type.html", null ],
+    [ "ImageName", "class_gwen_1_1_control_factory_1_1_properties_1_1_image_name.html", null ],
+    [ "Stretch", "class_gwen_1_1_control_factory_1_1_properties_1_1_stretch.html", null ],
+    [ "Text", "class_gwen_1_1_control_factory_1_1_properties_1_1_text.html", null ],
+    [ "Font", "class_gwen_1_1_control_factory_1_1_properties_1_1_font.html", null ],
+    [ "FontSize", "class_gwen_1_1_control_factory_1_1_properties_1_1_font_size.html", null ],
+    [ "FontBold", "class_gwen_1_1_control_factory_1_1_properties_1_1_font_bold.html", null ],
+    [ "Wrap", "class_gwen_1_1_control_factory_1_1_properties_1_1_wrap.html", null ],
+    [ "VerticalAlign", "class_gwen_1_1_control_factory_1_1_properties_1_1_vertical_align.html", null ],
+    [ "HorizontalAlign", "class_gwen_1_1_control_factory_1_1_properties_1_1_horizontal_align.html", null ],
+    [ "NumPages", "class_gwen_1_1_control_factory_1_1_properties_1_1_num_pages.html", null ],
+    [ "FinishName", "class_gwen_1_1_control_factory_1_1_properties_1_1_finish_name.html", null ],
+    [ "CycleSpeed", "class_gwen_1_1_control_factory_1_1_properties_1_1_cycle_speed.html", null ],
+    [ "Color", "class_gwen_1_1_control_factory_1_1_properties_1_1_color.html", null ],
+    [ "Min", "class_gwen_1_1_control_factory_1_1_properties_1_1_min.html", null ],
+    [ "Max", "class_gwen_1_1_control_factory_1_1_properties_1_1_max.html", null ]
+];

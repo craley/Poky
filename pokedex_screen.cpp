@@ -138,6 +138,12 @@ public:
 		row->SetCellText(0, first);
 		row->SetCellText(1, second);
 		table->AddRow(row);
+
+		auto label1 = table->GetCellContents(0)
+		auto label2 = table->GetCellContents(1)
+
+		label1->SetFont("assets/DroidSansMono.ttf", 14, false);
+		label2->SetFont("assets/DroidSansMono.ttf", 14, false);
 	}
 
 	void setPokemon(int id)
