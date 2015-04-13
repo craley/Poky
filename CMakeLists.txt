@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(pokedex)
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${POKEDEX_SOURCE_DIR}/cmake")
-SET(BIN_DIR ${POKEDEX_SOURCE_DIR}/)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${pokedex_SOURCE_DIR}/cmake")
+SET(BIN_DIR ${pokedex_SOURCE_DIR}/)
 
 # Bump up warning levels appropriately for clang, gcc & msvc and build in debug mode
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
@@ -39,7 +39,7 @@ ADD_EXECUTABLE(
 	imgui.cpp
 	imgui_sdlbackend.cpp
 	home_screen.cpp
-    pokedex_screen.cpp
+    	pokedex_screen.cpp
 	sprite.cpp
 	texture.cpp
 	PokemonData.cpp

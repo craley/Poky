@@ -53,7 +53,12 @@ namespace imgui {
 
 	void SDLRenderBackend::drawTexture(int x, int y, int w, int h, SDL_Texture *texture)
 	{
-		SDL_Rect dest({x, y, w, h});
+		SDL_Rect dest;
+		dest.x = x;
+		dest.y = y;
+		dest.w = w;
+		dest.h = h;
+
 		SDL_RenderCopyEx(m_renderer, texture, nullptr, &dest,
 				0, nullptr, SDL_FLIP_NONE);
 	}
