@@ -12,7 +12,6 @@
 #include <Gwen/Utility.h>
 #include <Gwen/Skins/Simple.h>
 #include <Gwen/Skins/TexturedBase.h>
-#include <Gwen/UnitTest/UnitTest.h>
 #include <Gwen/Input/SDL2.h>
 #include <Gwen/Renderers/SDL2.h>
 

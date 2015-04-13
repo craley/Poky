@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
-cd _build
+cd build
 make
 make install

@@ -11,6 +11,7 @@
 #include "pokedex_screen.hpp"
 #include "text.hpp"
 
+#include "Gwen/Controls/ListBox.h"
 #include "Gwen/Controls/Layout/Table.h"
 #include "Gwen/Controls/TextBox.h"
 #include "Gwen/Controls/ImagePanel.h"
@@ -139,8 +140,8 @@ public:
 		row->SetCellText(1, second);
 		table->AddRow(row);
 
-		auto label1 = table->GetCellContents(0)
-		auto label2 = table->GetCellContents(1)
+		auto label1 = row->GetCellContents(0);
+		auto label2 = row->GetCellContents(1);
 
 		label1->SetFont("assets/DroidSansMono.ttf", 14, false);
 		label2->SetFont("assets/DroidSansMono.ttf", 14, false);
@@ -152,6 +153,7 @@ public:
 		imgPanel->SetImage(index.imagePath);
 		flavorLabel->SetText(index.flavorText);
 
+		table->Clear();
 		addRow("Base HP", std::to_string(index.baseHP));
 		addRow("Base Attk", std::to_string(index.baseAtt));
 		addRow("Base Sp. Attk", std::to_string(index.baseSpAtt));
@@ -233,7 +235,6 @@ void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
 
 PokedexScreen::~PokedexScreen()
 {
-	delete m_pokedexBase;
 	delete m_gwenCanvas;
 	delete m_gwenSkin;
 	delete m_gwenRenderer;
