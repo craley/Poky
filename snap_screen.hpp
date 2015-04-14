@@ -19,14 +19,16 @@ public:
     void handleEvent(const SDL_Event &sdlEvent) override;
     void frameStep(unsigned long tickMS) override;
     
-    void generateSprite();
+    bool generateSprite();
+    void updateSprite(long elapsed);
     long to_millis(int minutes, int seconds);
-	std::string to_time(long millis);
+    std::string to_time(long millis);
     int getRandom(int low, int high);
-    SDL_Texture* textToTexture(std::string, SDL_Color);
+    SDL_Texture* textToTexture(std::string, SDL_Color*);
     SDL_Texture* imageToTexture(std::string path);
-    
+    bool getRandomPercent(float);
 private:
+    enum Dir { North, East, South, West };
     imgui::UIState m_userInterface;
     
     TTF_Font *font;
@@ -43,13 +45,21 @@ private:
     
     SDL_Texture *background;
     
+    SDL_Texture *bush;
+    SDL_Rect bush1;
+    SDL_Rect bush2;
+    SDL_Rect bush3;
+    SDL_Rect bush4;
+    
     Sprite simpleSprite;
+    SDL_Rect spriteRect;
 
     int score;
     std::clock_t time;
-    long countdown;
+    unsigned long countdown;
     
     bool spriteVisible;
+    unsigned long duration;
     
     //Mouse pointer
     //int cursor_x;
