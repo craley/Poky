@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+
+#include <SDL.h>
 #include "imgui_renderbackend.hpp"
 #include "sprite.hpp"
 
@@ -17,6 +19,9 @@ namespace imgui {
 
 		void begin();
 		void end();
+
+		void beginFrame(SDL_Texture *texture);
+		void endFrame(SDL_Texture *texture);
 
 		bool clickedSprite(int id, const Sprite &sprite);
 		bool mouseOverSprite(const Sprite &sprite);

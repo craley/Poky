@@ -11,8 +11,181 @@
 #include "pokedex_screen.hpp"
 #include "text.hpp"
 
+#include "Gwen/Controls/ListBox.h"
+#include "Gwen/Controls/Layout/Table.h"
+#include "Gwen/Controls/TextBox.h"
+#include "Gwen/Controls/ImagePanel.h"
+#include "Gwen/Controls/GroupBox.h"
+
 using options::WINDOW_WIDTH;
 using options::WINDOW_HEIGHT;
+
+struct PokemonIndex {
+	PokemonIndex(PokemonData &pokeData)
+	{
+		name = pokeData.getName();
+		imagePath = pokeData.getSpriteLocation();
+		id = pokeData.getID();
+		baseHP = pokeData.getBaseHP();
+		baseAtt = pokeData.getBaseAtt();
+		baseDef = pokeData.getBaseDef();
+		baseSpAtt = pokeData.getBaseSpAtt();
+		baseSpDef = pokeData.getBaseSpDef();
+		flavorText = pokeData.getFlavorText();
+		type = pokeData.getTypeName(pokeData.getTypeID1());
+		if (pokeData.getTypeID2() != 0) {
+			type.append(", " + pokeData.getTypeName(pokeData.getTypeID2()));
+		}
+		weakTo = pokeData.getTypesWeakTo();
+		doubleWeakTo = pokeData.getTypesDoubleWeakTo();
+		resistantTo = pokeData.getTypesResistantTo();
+		doubleResistantTo = pokeData.getTypesDoubleResistantTo();
+		immuneTo = pokeData.getTypesImmuneTo();
+		normalTo = pokeData.getTypesDamagedNormallyBy();
+	}
+
+	std::string name;
+	std::string imagePath;
+	std::string flavorText;
+	std::string type;
+
+	Gwen::Controls::Layout::TableRow* tableRow;
+
+	int id;
+	int baseHP;
+	int baseAtt;
+	int baseDef;
+	int baseSpAtt;
+	int baseSpDef;
+
+	std::vector<int> weakTo;
+	std::vector<int> doubleWeakTo;
+	std::vector<int> resistantTo;
+	std::vector<int> doubleResistantTo;
+	std::vector<int> immuneTo;
+	std::vector<int> normalTo;
+};
+
+class Pokedex : public Gwen::Controls::Base
+{
+public:
+
+    Pokedex(Gwen::Controls::Base *pParent, PokemonData &pokeData, const Gwen::String& name = "")
+		: Gwen::Controls::Base(pParent, name)
+    {
+		SetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+		{
+			textBox = new Gwen::Controls::TextBox(this);
+			textBox->SetPos(5, 70);
+			textBox->SetSize(WINDOW_WIDTH/4, 40);
+			textBox->SetText("");
+		}
+
+		{
+			listBox = new Gwen::Controls::ListBox(this);
+			listBox->SetPos(textBox->GetPos().x, textBox->GetPos().y + textBox->Height() + 25);
+			listBox->SetSize(WINDOW_WIDTH/4, WINDOW_HEIGHT-150-5);
+
+			for (int i = 1, totalPokemon = pokeData.numPokemon(); i <= totalPokemon; ++i) {
+				pokeData.setPokemon(i);
+				pokemonList.push_back(PokemonIndex(pokeData));
+				pokemonList[i-1].tableRow = listBox->AddItem(pokemonList[i-1].name);
+			}
+
+			listBox->SelectByString(pokemonList[0].name);
+            listBox->onRowSelected.Add(this, &Pokedex::rowSelected);
+		}
+
+		{
+			imgPanel= new Gwen::Controls::ImagePanel(this);
+            imgPanel->SetBounds((WINDOW_WIDTH - listBox->GetPos().x + listBox->Width())/2, 0, 200, 200);
+		}
+
+		{
+			auto flavorGroup = new Gwen::Controls::GroupBox(this);
+			flavorGroup->SetSize(imgPanel->GetPos().x - 5 - (textBox->GetPos().x + textBox->Width()),
+								175);
+			flavorGroup->SetPos(textBox->GetPos().x + textBox->Width() + 5, 10);
+			flavorGroup->SetText("Description");
+			flavorGroup->SetFont("assets/DroidSansMono.ttf", 14, false);
+
+			flavorLabel = new Gwen::Controls::Label(flavorGroup);
+			flavorLabel->Dock(Gwen::Pos::Fill);
+			flavorLabel->SetWrap(true);
+			flavorLabel->SetFont("assets/DroidSansMono.ttf", 14, false);
+		}
+
+		{
+			groupBox = new Gwen::Controls::GroupBox(this);
+			groupBox->SetSize(WINDOW_WIDTH - listBox->Width() - 15, WINDOW_HEIGHT - imgPanel->Height() - 10);
+			groupBox->SetPos(listBox->GetPos().x + listBox->Width() + 5,
+						     imgPanel->GetPos().y + imgPanel->Height() + 5);
+			groupBox->SetFont("assets/DroidSansMono.ttf", 14, false);
+			groupBox->SetText("Stats");
+
+			table = new Gwen::Controls::Layout::Table(groupBox);
+			table->Dock(Gwen::Pos::Fill);
+			table->SetColumnCount(2);
+		}
+
+		setPokemon(1);
+    }
+
+	void addRow(const std::string &first, const std::string &second)
+	{
+		auto row = new Gwen::Controls::Layout::TableRow(groupBox);
+		row->SetColumnCount(2);
+		row->SetCellText(0, first);
+		row->SetCellText(1, second);
+		table->AddRow(row);
+
+		auto label1 = row->GetCellContents(0);
+		auto label2 = row->GetCellContents(1);
+
+		label1->SetFont("assets/DroidSansMono.ttf", 14, false);
+		label2->SetFont("assets/DroidSansMono.ttf", 14, false);
+	}
+
+	void setPokemon(int id)
+	{
+		PokemonIndex &index = pokemonList[id - 1];
+		imgPanel->SetImage(index.imagePath);
+		flavorLabel->SetText(index.flavorText);
+
+		table->Clear();
+		addRow("Base HP", std::to_string(index.baseHP));
+		addRow("Base Attk", std::to_string(index.baseAtt));
+		addRow("Base Sp. Attk", std::to_string(index.baseSpAtt));
+		addRow("Base Def", std::to_string(index.baseDef));
+		addRow("Base Sp. Def", std::to_string(index.baseSpDef));
+	}
+
+    void rowSelected(Gwen::Controls::Base* pControl)
+    {
+        Gwen::Controls::ListBox* ctrl = (Gwen::Controls::ListBox*)pControl;
+		std::string name = ctrl->GetSelectedRow()->GetText(0);;
+		int id = 1;
+
+		for (auto &pokemon : pokemonList) {
+			if (pokemon.name == name) {
+				id = pokemon.id;
+				break;
+			}
+		}
+
+		setPokemon(id);
+    }
+
+	Gwen::Controls::ImagePanel *imgPanel;
+	Gwen::Controls::ListBox *listBox;
+	Gwen::Controls::TextBox *textBox;
+	Gwen::Controls::GroupBox* groupBox;
+	Gwen::Controls::Layout::Table* table;
+	Gwen::Controls::Label *flavorLabel;
+
+	std::vector<PokemonIndex> pokemonList;
+};
 
 bool PokedexScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher)
 {
@@ -20,246 +193,59 @@ bool PokedexScreen::initialize(RenderContext *context, ScreenDispatcher *dispatc
 		return false;
 	}
 
-	m_font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 16);
-	if (m_font == nullptr) {
-		std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
-		return false;
-	}
-
 	m_pokeData.setPokemon(1);
 	m_currentPokemonID = m_pokeData.getID();
 	setPokedexData(m_currentPokemonID);
 
-	// initialize the user interface
-	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
+    m_gwenRenderer = new Gwen::Renderer::SDL2(m_context->window, m_context->renderer);
+	m_gwenSkin = new Gwen::Skin::TexturedBase(m_gwenRenderer);
+    m_gwenSkin->SetRender(m_gwenRenderer);
+    m_gwenSkin->Init("assets/DefaultSkin.png");
+    m_gwenSkin->SetDefaultFont("assets/DroidSansMono.ttf", 20);
+    
+    m_gwenCanvas = new Gwen::Controls::Canvas(m_gwenSkin);
+    m_gwenCanvas->SetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    m_gwenCanvas->SetDrawBackground(true);
+    m_gwenCanvas->SetBackgroundColor(Gwen::Color(150, 170, 170, 255));
+
+    // Create our unittest control (which is a Window with controls in it)
+    m_pokedexBase = new Pokedex(m_gwenCanvas, m_pokeData);
+    m_gwenInput.Initialize(m_gwenCanvas);
+
 	return true;
 }
 
 void PokedexScreen::setPokedexData(int id)
 {
-	if (m_textTexture) {
-		SDL_DestroyTexture(m_textTexture);
-	}
-
 	m_pokeData.setPokemon(id);
 	m_pokeData.setType(m_pokeData.getTypeID1(), m_pokeData.getTypeID2());
-
-	// Pokemon data
-	{
-		std::string txt = "Name: " + m_pokeData.getName()
-			+ "\n" + "Base HP: " + std::to_string(m_pokeData.getBaseHP())
-			+ "\n" + "Base Att: " + std::to_string(m_pokeData.getBaseAtt())
-			+ "\n" + "Base Def: " + std::to_string(m_pokeData.getBaseDef())
-			+ "\n" + "Base Sp Att: " + std::to_string(m_pokeData.getBaseSpAtt())
-			+ "\n" + "Base Sp Def: " + std::to_string(m_pokeData.getBaseSpDef());
-
-		txt.append("\nTypes: " + m_pokeData.getTypeName(m_pokeData.getTypeID1()));
-		if(m_pokeData.getTypeID2() != 0){
-			txt.append(", " + m_pokeData.getTypeName(m_pokeData.getTypeID2()));
-		}
-		txt.append("\n\n"  + m_pokeData.getFlavorText());
-		txt.append("\n\nWeak To: ");
-		{
-			std::vector<int> weakTo = m_pokeData.getTypesWeakTo();
-			std::vector<int>::const_iterator it = weakTo.begin();
-			if(it != weakTo.end()){
-				while(it != weakTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-		txt.append("\nDouble Weak To: ");
-		{
-			std::vector<int> doubleWeakTo = m_pokeData.getTypesDoubleWeakTo();
-			std::vector<int>::const_iterator it = doubleWeakTo.begin();
-			if(it != doubleWeakTo.end()){
-				while(it != doubleWeakTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-		txt.append("\nResistant To: ");
-		{
-			std::vector<int> resistantTo = m_pokeData.getTypesResistantTo();
-			std::vector<int>::const_iterator it = resistantTo.begin();
-			if(it != resistantTo.end()){
-				while(it != resistantTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-		txt.append("\nDouble Resistant To: ");
-		{
-			std::vector<int> doubleResistantTo = m_pokeData.getTypesDoubleResistantTo();
-			std::vector<int>::const_iterator it = doubleResistantTo.begin();
-			if(it != doubleResistantTo.end()){
-				while(it != doubleResistantTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-		txt.append("\nImmune To: ");
-		{
-			std::vector<int> immuneTo = m_pokeData.getTypesImmuneTo();
-			std::vector<int>::const_iterator it = immuneTo.begin();
-			if(it != immuneTo.end()){
-				while(it != immuneTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-		txt.append("\nDamaged Normally by: ");
-		{
-			std::vector<int> normalTo = m_pokeData.getTypesDamagedNormallyBy();
-			std::vector<int>::const_iterator it = normalTo.begin();
-			if(it != normalTo.end()){
-				while(it != normalTo.end()-1){
-					txt.append(m_pokeData.getTypeName(*it) + ", ");
-					++it;
-				}
-				txt.append(m_pokeData.getTypeName(*it));
-			}
-		}
-
-		const SDL_Color white = {255, 255, 255, 255};
-		int textStartX = WINDOW_WIDTH/3;
-		m_textTexture = getTextRenderTexture(m_context->renderer, m_font, txt, white, WINDOW_WIDTH - textStartX);
-		m_pokemonName.setImage(m_textTexture);
-		m_pokemonName.setPosition(WINDOW_WIDTH/3, 0);
-	}
-
-	// Pokemon image
-	{
-		m_pokemonImage = m_context->loadTexture(m_pokeData.getSpriteLocation());
-		m_pokemonImage.setPosition(0, 0);
-		m_pokemonImage.setScale(2.0f);
-	}
-
-	// Create window
-	{
-		m_windowTarget = SDL_CreateTexture(m_context->renderer,
-			SDL_PIXELFORMAT_RGBA8888,
-			SDL_TEXTUREACCESS_TARGET,
-			200, WINDOW_HEIGHT-(155+20)-4);
-
-		uint8_t r, g, b, a;
-		SDL_GetRenderDrawColor(m_context->renderer, &r, &g, &b, &a);
-		SDL_SetRenderDrawColor(m_context->renderer, 128, 0, 128, 255);
-		SDL_SetRenderTarget(m_context->renderer, m_windowTarget);
-		SDL_RenderClear(m_context->renderer);
-		SDL_SetRenderTarget(m_context->renderer, nullptr);
-		SDL_SetRenderDrawColor(m_context->renderer, r, g, b, a);
-
-		m_window.setImage(m_windowTarget);
-		m_window.setPosition(4, 154+20);
-	}
-
-	// Create text for window
-	{
-		const SDL_Color white = {255, 255, 255, 255};
-
-		PokemonData::Characteristics characteristics;
-		auto pokeList = m_pokeData.getPokemonWithCharacteristics(characteristics);
-		m_totalPokemon = static_cast<int>(pokeList.size());
-
-		std::string names;
-		for (auto i : pokeList) {
-			m_pokeData.setPokemon(i);
-			names += m_pokeData.getName() + "\n";
-		}
-		m_textTestTexture = getTextRenderTexture(
-			m_context->renderer,
-			m_font,
-			names, white, 200+4+2);
-		m_textTest.setImage(m_textTestTexture);
-		m_textTest.setPosition(2, 2);
-	}
 }
 
 void PokedexScreen::handleEvent(const SDL_Event &sdlEvent)
 {
 	switch(sdlEvent.type) {
-		case SDL_MOUSEMOTION:
-			m_userInterface.mouseX = sdlEvent.motion.x;
-			m_userInterface.mouseY = sdlEvent.motion.y;
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-				m_userInterface.mouseDown = true;
-			}
-			break;
-		case SDL_MOUSEBUTTONUP:
-			if (sdlEvent.button.button == SDL_BUTTON_LEFT)
-				m_userInterface.mouseDown = false;
-			break;
 		case SDL_KEYDOWN:
 			switch (sdlEvent.key.keysym.sym) {
-				case SDLK_EQUALS:
-				case SDLK_KP_PLUS:
-					m_currentPokemonID = (m_currentPokemonID % m_pokeData.numPokemon()) + 1;
-					setPokedexData(m_currentPokemonID);
-					break;
-				case SDLK_MINUS:
-				case SDLK_KP_MINUS:
-					m_currentPokemonID--;
-					if (m_currentPokemonID < 1) {
-						m_currentPokemonID = m_pokeData.numPokemon();
-					}
-					setPokedexData(m_currentPokemonID);
-					break;
 			}
 			break;
 	}
 
-	m_userInterface.handleEvent(sdlEvent);
+	m_gwenInput.ProcessEvent(const_cast<SDL_Event*>(&sdlEvent));
 }
 
 PokedexScreen::~PokedexScreen()
 {
-	SDL_DestroyTexture(m_windowTarget);
+	delete m_gwenCanvas;
+	delete m_gwenSkin;
+	delete m_gwenRenderer;
 }
 
 void PokedexScreen::frameStep(unsigned long)
 {
 	SDL_RenderClear(m_context->renderer);
-	m_context->render(m_pokemonName);
-	m_context->render(m_pokemonImage);
 
-	m_userInterface.begin();
-	if (m_userInterface.textField(1, 4, 150, 200, 20, m_textField)) {
-	}
-
-	// window
-	{
-		SDL_SetRenderTarget(m_context->renderer, m_window.texture());
-		uint8_t r, g, b, a;
-		SDL_GetRenderDrawColor(m_context->renderer, &r, &g, &b, &a);
-		SDL_SetRenderDrawColor(m_context->renderer, 128, 0, 128, 255);
-
-		SDL_RenderClear(m_context->renderer);
-		m_context->render(m_textTest);
-
-		SDL_SetRenderDrawColor(m_context->renderer, r, g, b, a);
-		SDL_SetRenderTarget(m_context->renderer, nullptr);
-
-		m_context->render(m_window);
-	}
-
-	// scroll
-	if (m_userInterface.scrollBar(2, 204, 154+20, WINDOW_HEIGHT-(155+20)-4-24, m_totalPokemon*15, &m_scroll)) {
-		m_textTest.setPosition(2, -m_scroll+2);
-	}
-	m_userInterface.end();
+	m_gwenRenderer->BeginContext(NULL);
+	m_gwenCanvas->RenderCanvas();
 
 	SDL_RenderPresent(m_context->renderer);
 }

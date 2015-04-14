@@ -27,6 +27,16 @@ namespace imgui {
 		scrollWheel = 0;
 	}
 
+	void UIState::beginFrame(SDL_Texture *texture)
+	{
+		m_renderBackend->setRenderTarget(texture);
+	}
+
+	void UIState::endFrame(SDL_Texture *)
+	{
+		m_renderBackend->setRenderTarget(nullptr);
+	}
+
 	void UIState::handleEvent(const SDL_Event &sdlEvent)
 	{
 		switch(sdlEvent.type) {
@@ -193,7 +203,7 @@ namespace imgui {
 				return true;
 			}
 		} else if (scrollWheel) {
-			int tempValue = *val + (scrollWheel*max)/h;
+			int tempValue = *val - (scrollWheel*max)/h;
 			if (tempValue > max) {
 				tempValue = max;
 			} else if (tempValue < 0) {
