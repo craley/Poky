@@ -56,7 +56,10 @@ bool SnapScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher
 	background = imageToTexture("assets/pokyBackground.jpg");
 	spriteVisible = false;
 	
-	bush = imageToTexture("assets/bush.jpg");
+	crosshair = imageToTexture("assets/crosshair.png");
+	crossRect = { (int)(WINDOW_WIDTH * 0.5f) - 20, (int)(WINDOW_HEIGHT * 0.5f) - 20, 40, 40 };
+	
+	bush = imageToTexture("assets/bush1.png");
 	bush1 = { (int)(WINDOW_WIDTH * 0.1), (int)(WINDOW_HEIGHT * 0.33), 200, 200 };
 	bush2 = { (int)(WINDOW_WIDTH * 0.25), (int)(WINDOW_HEIGHT * 0.74), 200, 200 };
 	bush3 = { (int)(WINDOW_WIDTH * 0.55), (int)(WINDOW_HEIGHT * 0.25), 200, 200 };
@@ -103,16 +106,27 @@ void SnapScreen::frameStep(unsigned long) {
 		//perform random generate
 		if(generateSprite()){
 			spriteVisible = true;
-			int randomX = getRandom(0, WINDOW_WIDTH);
-			int randomY = getRandom(0, WINDOW_HEIGHT);
+			int randomBush = getRandom(0, 4);
+			switch(randomBush){
+				case 0:
+					spriteRect = { bush1.x, bush1.y, bush1.w, bush1.h }; break;
+				case 1:
+					spriteRect = { bush2.x, bush2.y, bush2.w, bush2.h }; break;
+				case 2:
+					spriteRect = { bush3.x, bush3.y, bush3.w, bush3.h }; break;
+				case 3:
+					spriteRect = { bush4.x, bush4.y, bush4.w, bush4.h }; break;
+			}
+			int randomDir = getRandom(0, 4);
 			
 		}
 	} else {//sprite visible
 		//check duration
 		if(duration < 0){
 			//nix the sprite
+			spriteVisible = false;
 		} else {
-			//update sprite
+			//update sprite by elapsed
 		}
 	}
 
@@ -142,6 +156,8 @@ void SnapScreen::frameStep(unsigned long) {
 	if(spriteVisible){
 		m_context->render(simpleSprite);
 	}
+	//draw crosshair
+	SDL_RenderCopy(m_context->renderer, crosshair, nullptr, &crossRect);
 
 	//copy portion of texture to render target
 	//SDL_RenderCopy(m_context->renderer, timerTexture, nullptr, &timerRect);

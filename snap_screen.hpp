@@ -51,6 +51,9 @@ private:
     SDL_Rect bush3;
     SDL_Rect bush4;
     
+    SDL_Texture *crosshair;
+    SDL_Rect crossRect;
+    
     Sprite simpleSprite;
     SDL_Rect spriteRect;
 
