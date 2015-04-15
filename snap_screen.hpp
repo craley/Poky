@@ -19,16 +19,16 @@ public:
     void handleEvent(const SDL_Event &sdlEvent) override;
     void frameStep(unsigned long tickMS) override;
     
-    bool generateSprite();
-    void updateSprite(long elapsed);
-    long to_millis(int minutes, int seconds);
-    std::string to_time(long millis);
+    void updateSprite(Uint32 dt, bool reverse);
+    Uint32 to_millis(int minutes, int seconds);
+    std::string to_time(Uint32 millis);
     int getRandom(int low, int high);
     SDL_Texture* textToTexture(std::string, SDL_Color*);
     SDL_Texture* imageToTexture(std::string path);
-    bool getRandomPercent(float);
+    Uint32 distanceSquared();
 private:
-    enum Dir { North, East, South, West };
+    //enum Dir { North, East, South, West };
+    //typedef Uint32 Number;
     imgui::UIState m_userInterface;
     
     TTF_Font *font;
@@ -46,30 +46,51 @@ private:
     SDL_Texture *background;
     
     SDL_Texture *bush;
-    SDL_Rect bush1;
-    SDL_Rect bush2;
-    SDL_Rect bush3;
-    SDL_Rect bush4;
+    SDL_Rect bushes[4];
+    int bushWidth = 200;
+    int bushHeight = 200;
     
     SDL_Texture *crosshair;
     SDL_Rect crossRect;
     
     Sprite simpleSprite;
     SDL_Rect spriteRect;
-
+    int spriteWidth = 100;
+    int spriteHeight = 100;
+    
+    //Player's score
     int score;
-    std::clock_t time;
-    unsigned long countdown;
+    //time of last frame
+    Uint32 lastTime;
+    //total game duration
+    Uint32 countdown = 25 * 1000;//milliseconds
+    
+    //sprite regen timer
+    Uint32 generationTime;
+    Uint32 pauseTime;
     
     bool spriteVisible;
-    unsigned long duration;
     
     //Mouse pointer
-    //int cursor_x;
-    //int cursor_y;
     struct point {
         int mx;
         int my;
     };
     point cursor;
+    //the current time in-game
+    Uint32 gametime = 0;//milliseconds
+    
+    int phase;
+    Uint32 spriteInterval = 3 * 1000;//milliseconds
+    Uint32 spriteTravelDist = 200;//pixels
+    Uint32 spriteHoldTime = 2 * 1000;//milliseconds
+    Uint32 speed = 50;//pixels per second
+    struct vec {
+        int vx;
+        int vy;
+    };
+    //direction vecs
+    vec dir[4];
+    int currentDir;
+    int currentBush;
 };
