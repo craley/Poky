@@ -44,11 +44,6 @@ struct PokemonIndex {
 		normalTo = pokeData.getTypesDamagedNormallyBy();
 	}
 
-	std::string name;
-	std::string imagePath;
-	std::string flavorText;
-	std::string type;
-
 	Gwen::Controls::Layout::TableRow* tableRow;
 
 	int id;
@@ -57,6 +52,11 @@ struct PokemonIndex {
 	int baseDef;
 	int baseSpAtt;
 	int baseSpDef;
+
+	std::string name;
+	std::string imagePath;
+	std::string flavorText;
+	std::string type;
 
 	std::vector<int> weakTo;
 	std::vector<int> doubleWeakTo;
