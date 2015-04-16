@@ -40,7 +40,14 @@ Building  requires [Cmake >= 2.8](http://www.cmake.org/) in order to generate th
 ##### *nix instructions
 
 ```bash
-mkdir _build && cd _build
+cd thirdparty/gwen
+mkdir -p build && cd build
+cmake ..
+make
+make install
+cd ../../../
+
+mkdir -p build && cd build
 cmake ..
 make
 make install
@@ -49,9 +56,13 @@ A pokedex executable will be generated in the root
 
 ##### Windows instructions
 1. Download the cmake gui tool
-2. Set the source path to point to the pokedex root
-3. Set the build path to point to Pokedex/_build
-4. configure
-5. You'll need to edit the `SDL_INCLUDE_LIBRARY` and similar paths to point to their respective folders 
-5. generate
-6. the generated visual studio (or other ide files) project is in _build
+2. Set the source path to point to the Pokedex/thirdparty/gwen
+3. Set build path to Pokedex/thirdparty/gwen/build
+4. Generate project file and build in release configuration
+5. Go back to the cmake gui tool
+6. Set the source path to the Pokedex source path
+7. Set the build path to point to Pokedex/_build
+8. configure
+9. You'll need to edit the `SDL_INCLUDE_LIBRARY` and similar paths to point to their respective folders 
+10. generate
+11. the generated visual studio (or other ide files) project is in _build

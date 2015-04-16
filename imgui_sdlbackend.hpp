@@ -11,6 +11,8 @@ namespace imgui {
 		SDLRenderBackend(SDL_Renderer *renderer);
 		void drawRect(int x, int y, int w, int h, SDL_Color color) override;
 		void drawText(int x, int y, int w, SDL_Color color, const std::string &text) override;
+		void drawTexture(int x, int y, int w, int h, SDL_Texture *texture) override;
+		void setRenderTarget(SDL_Texture *texture) override;
 	private:
 		SDL_Renderer *m_renderer;
 		TTF_Font *m_font;

@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-
 class Sprite {
 public:
 	Sprite();
