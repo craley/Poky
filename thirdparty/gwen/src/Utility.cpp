@@ -8,11 +8,11 @@
 #include "Gwen/Utility.h"
 
 #include <cstdio>
+#include <wchar.h>
 
 // For Unicode support.
 // Note: <codecvt> is C++11 and in Xcode you'll need to use libc++ (LLVM), not libstdc++ (GNU).
 #include <locale>       // Narrow/widen
-#include <codecvt>      // Narrow/widen - C++11
 
 namespace Gwen {
 namespace Utility {
@@ -104,25 +104,14 @@ namespace Utility {
 
         std::wstring Widen(const Gwen::String &nstr)
         {
-            // UTF-8 to UTF-16 (C++11)
-            // See: http://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            // See: http://www.cplusplus.com/reference/codecvt/codecvt_utf8_utf16/
-
-            std::wstring_convert< std::codecvt_utf8_utf16<wchar_t>, wchar_t > conversion;
-            const std::wstring wstr( conversion.from_bytes( nstr.c_str() ) );
-
+			std::wstring wstr;
+			wstr.assign(nstr.begin(), nstr.end());
             return wstr;
         }
 
         Gwen::String Narrow(const std::wstring &wstr)
         {
-            // wide to UTF-8 (C++11)
-            // See: http://en.cppreference.com/w/cpp/locale/wstring_convert/to_bytes
-
-            std::wstring_convert< std::codecvt_utf8<wchar_t> > conv1;
-            Gwen::String u8str = conv1.to_bytes(wstr);
-
-            return u8str;
+			return Gwen::String(wstr.begin(), wstr.end());
         }
 
         void Replace(String& str, const String& strFind, const String& strReplace)
