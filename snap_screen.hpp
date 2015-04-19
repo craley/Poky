@@ -27,8 +27,6 @@ public:
     SDL_Texture* imageToTexture(std::string path);
     Uint32 distanceSquared();
 private:
-    //enum Dir { North, East, South, West };
-    //typedef Uint32 Number;
     imgui::UIState m_userInterface;
     
     TTF_Font *font;
@@ -60,6 +58,7 @@ private:
     
     //Player's score
     int score;
+	static const int HIT_POINTS = 10;
     //time of last frame
     Uint32 lastTime;
     //total game duration

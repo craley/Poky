@@ -59,7 +59,7 @@ bool SnapScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher
 	crosshair = imageToTexture("assets/crosshair.png");
 	crossRect = {(int) (WINDOW_WIDTH * 0.5f) - 20, (int) (WINDOW_HEIGHT * 0.5f) - 20, 40, 40};
 
-	bush = imageToTexture("assets/bush.png");
+	bush = imageToTexture("assets/bush.jpg");
 	bushes[0] = {(int) (WINDOW_WIDTH * 0.1), (int) (WINDOW_HEIGHT * 0.33),  bushWidth, bushHeight };
 	bushes[1] = {(int) (WINDOW_WIDTH * 0.25), (int) (WINDOW_HEIGHT * 0.74), bushWidth, bushHeight };
 	bushes[2] = {(int) (WINDOW_WIDTH * 0.55), (int) (WINDOW_HEIGHT * 0.25), bushWidth, bushHeight };
@@ -139,8 +139,8 @@ void SnapScreen::frameStep(unsigned long now) {
 			generationTime = 0;
 			phase = 0;
 			spriteVisible = true;
-			currentBush = getRandom(0, 4);
-			currentDir = getRandom(0, 4);
+			currentBush = getRandom(0, 3);
+			currentDir = getRandom(0, 3);
 			spriteRect.x = bushes[currentBush].x + ((int)(bushes[currentBush].w * 0.5f) - (int)(spriteRect.w * 0.5f));
 			spriteRect.y = bushes[currentBush].y + ((int)(bushes[currentBush].h * 0.5f) - (int)(spriteRect.h * 0.5f));
 		}
@@ -176,6 +176,10 @@ void SnapScreen::frameStep(unsigned long now) {
 	
 	//draw crosshair
 	SDL_RenderCopy(m_context->renderer, crosshair, nullptr, &crossRect);
+
+	if(spriteVisible && m_userInterface.mouseOverSprite(simpleSprite)){
+		score += HIT_POINTS;
+	}
 
 	//copy portion of texture to render target
 	//SDL_RenderCopy(m_context->renderer, timerTexture, nullptr, &timerRect);
