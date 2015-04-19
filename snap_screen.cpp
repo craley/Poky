@@ -59,7 +59,8 @@ bool SnapScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher
 	crosshair = imageToTexture("assets/crosshair.png");
 	crossRect = {(int) (WINDOW_WIDTH * 0.5f) - 20, (int) (WINDOW_HEIGHT * 0.5f) - 20, 40, 40};
 
-	bush = imageToTexture("assets/bush.jpg");
+	//bush = imageToTexture("assets/bush.png");
+	bush = createTransparentTexture("assets/bush.jpg", &white);
 	bushes[0] = {(int) (WINDOW_WIDTH * 0.1), (int) (WINDOW_HEIGHT * 0.33),  bushWidth, bushHeight };
 	bushes[1] = {(int) (WINDOW_WIDTH * 0.25), (int) (WINDOW_HEIGHT * 0.74), bushWidth, bushHeight };
 	bushes[2] = {(int) (WINDOW_WIDTH * 0.55), (int) (WINDOW_HEIGHT * 0.25), bushWidth, bushHeight };
@@ -91,12 +92,33 @@ SDL_Texture* SnapScreen::imageToTexture(std::string path) {
 	SDL_FreeSurface(surface);
 	return tex;
 }
+SDL_Texture* SnapScreen::createTransparentTexture(std::string path, SDL_Color *color){
+	SDL_Surface *surface = IMG_Load(path.c_str());
+	
+	if(!surface){
+		std::cerr << "Image error: " << IMG_GetError() << std::endl;
+		return nullptr;
+	}
+	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, color->r, color->b, color->g));
+	
+	SDL_Texture *tex = SDL_CreateTextureFromSurface(m_context->renderer, surface);
+	SDL_FreeSurface(surface);
+	return tex;
+}
 
 void SnapScreen::handleEvent(const SDL_Event &sdlEvent) {
 	switch (sdlEvent.type) {
 		case SDL_MOUSEBUTTONDOWN:
 			return;
 		case SDL_MOUSEMOTION:
+			return;
+		case SDL_KEYDOWN:
+			switch(sdlEvent.key.keysym.sym){
+				case SDLK_ESCAPE:
+					//back to home screen
+					return;
+					
+			}
 		default:
 			return;
 	}
@@ -176,11 +198,14 @@ void SnapScreen::frameStep(unsigned long now) {
 	
 	//draw crosshair
 	SDL_RenderCopy(m_context->renderer, crosshair, nullptr, &crossRect);
-
+	
+	//detect mouse hits
+	m_userInterface.begin();
 	if(spriteVisible && m_userInterface.mouseOverSprite(simpleSprite)){
 		score += HIT_POINTS;
 	}
-
+	
+	m_userInterface.end();
 	//copy portion of texture to render target
 	//SDL_RenderCopy(m_context->renderer, timerTexture, nullptr, &timerRect);
 	//m_userInterface.end();

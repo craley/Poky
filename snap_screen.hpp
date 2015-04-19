@@ -25,8 +25,11 @@ public:
     int getRandom(int low, int high);
     SDL_Texture* textToTexture(std::string, SDL_Color*);
     SDL_Texture* imageToTexture(std::string path);
+    SDL_Texture* createTransparentTexture(std::string path, SDL_Color *color);
     Uint32 distanceSquared();
 private:
+    //enum Dir { North, East, South, West };
+    //typedef Uint32 Number;
     imgui::UIState m_userInterface;
     
     TTF_Font *font;
@@ -42,6 +45,7 @@ private:
     SDL_Color blue = { 0, 0, 255, 0 };
     
     SDL_Texture *background;
+    SDL_Color white = { 0xff, 0xff, 0xff, 0 };
     
     SDL_Texture *bush;
     SDL_Rect bushes[4];
@@ -58,7 +62,7 @@ private:
     
     //Player's score
     int score;
-	static const int HIT_POINTS = 10;
+    const static int HIT_POINTS = 10;
     //time of last frame
     Uint32 lastTime;
     //total game duration
