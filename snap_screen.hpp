@@ -28,12 +28,14 @@ public:
     SDL_Texture* createTransparentTexture(std::string path, SDL_Color *color);
     Uint32 distanceSquared();
     void updateCamera(int mx, int my);
+	bool overlap(SDL_Rect& a, SDL_Rect& b);
 private:
     //enum Dir { North, East, South, West };
     //typedef Uint32 Number;
     imgui::UIState m_userInterface;
     
     TTF_Font *font;
+	SDL_Rect screenRect;
     
     //Timer
     SDL_Texture *timerTexture = nullptr;
@@ -57,8 +59,8 @@ private:
     //Bush
     SDL_Texture *bush;
     SDL_Rect bushes[4];
-    int bushWidth = 200;
-    int bushHeight = 200;
+    int bushWidth = 180;
+    int bushHeight = 180;
     
     //Crosshair
     SDL_Texture *crosshair;
@@ -75,11 +77,11 @@ private:
     
     //Player's score
     int score;
-    const static int HIT_POINTS = 10;
+    const static int HIT_POINTS = 5;
     //time of last frame
     Uint32 lastTime;
     //total game duration
-    Uint32 countdown = 25 * 1000;//milliseconds
+    Uint32 countdown = 45 * 1000;//milliseconds
     
     //sprite regen timer
     Uint32 generationTime;
@@ -98,7 +100,7 @@ private:
     Uint32 spriteInterval = 3 * 1000;//milliseconds
     Uint32 spriteTravelDist = 200;//pixels
     Uint32 spriteHoldTime = 2 * 1000;//milliseconds
-    Uint32 speed = 50;//pixels per second
+    Uint32 speed = 145;//pixels per second
     struct vec {
         int vx;
         int vy;
@@ -108,6 +110,7 @@ private:
     int currentDir;
     int currentBush;
     
+	point start_point;
     bool mouseClicked;
     
 };
