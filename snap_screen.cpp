@@ -29,35 +29,42 @@ bool SnapScreen::initialize(RenderContext *context, ScreenDispatcher *dispatcher
 	if (!Screen::initialize(context, dispatcher)) {
 		return false;
 	}
-
 	// initialize the user interface
 	m_userInterface.setRenderBackend(std::make_unique<imgui::SDLRenderBackend>(m_context->renderer));
+	font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 32);
 	
 	//mouse cursor - centered
 	cursor.mx = WINDOW_WIDTH * 0.5;
 	cursor.my = WINDOW_HEIGHT * 0.5;
 	//timer display
-	font = TTF_OpenFont("assets/unifont-7.0.06.ttf", 32);
+	
 
 	//timerText = std::to_string(countdown);
 	timerText = to_time(countdown);
 	timerTexture = textToTexture(timerText, &red);
-	timerRect = {WINDOW_WIDTH - 150 - 10, 5, 150, 50}; //x,y,w,h
+	timerWidth = 150;
+	timerHeight = 150;
+	timerRect = {WINDOW_WIDTH - timerWidth - 10, 5, timerWidth, timerHeight }; //x,y,w,h
 
 	scoreText = "0";
 	scoreTexture = textToTexture(scoreText, &blue);
-	scoreRect = {20, 5, 40, 40};
-
-	simpleSprite.setImage(context->loadTexture("assets/sprites/Spr_5b_025.png"));
-	simpleSprite.setPosition(0,0);
-	simpleSprite.setScale(spriteWidth, spriteHeight);
-	spriteRect = simpleSprite.rect();
-
+	scoreWidth = 40;
+	scoreHeight = 40;
+	scoreRect = {20, 5, scoreWidth, scoreHeight};
+	
 	background = imageToTexture("assets/pokyBackground.jpg");
+
+	//simpleSprite.setImage(context->loadTexture("assets/sprites/Spr_5b_025.png"));
+	//simpleSprite.setPosition(0,0);
+	//simpleSprite.setScale(spriteWidth, spriteHeight);
+	//spriteRect = simpleSprite.rect();
+	sprite = imageToTexture("assets/sprites/Spr_5b_025.png");
+	spriteRect = { 0,0, spriteWidth, spriteHeight };
+
 	spriteVisible = false;
 
 	crosshair = imageToTexture("assets/crosshair.png");
-	crossRect = {(int) (WINDOW_WIDTH * 0.5f) - 20, (int) (WINDOW_HEIGHT * 0.5f) - 20, 40, 40};
+	crossRect = {(int) (WINDOW_WIDTH * 0.5f) - 20, (int) (WINDOW_HEIGHT * 0.5f) - 20, crossWidth, crossHeight };
 
 	//bush = imageToTexture("assets/bush.png");
 	bush = createTransparentTexture("assets/bush.jpg", &white);
@@ -107,10 +114,18 @@ SDL_Texture* SnapScreen::createTransparentTexture(std::string path, SDL_Color *c
 }
 
 void SnapScreen::handleEvent(const SDL_Event &sdlEvent) {
+	static int mx;
+	static int my;
 	switch (sdlEvent.type) {
 		case SDL_MOUSEBUTTONDOWN:
+			mouseClicked = true;
+			return;
+		case SDL_MOUSEBUTTONUP:
+			mouseClicked = false;
 			return;
 		case SDL_MOUSEMOTION:
+			SDL_GetMouseState(&mx, &my);
+			updateCamera(mx, my);
 			return;
 		case SDL_KEYDOWN:
 			switch(sdlEvent.key.keysym.sym){
@@ -119,8 +134,26 @@ void SnapScreen::handleEvent(const SDL_Event &sdlEvent) {
 					return;
 					
 			}
+			return;
 		default:
 			return;
+	}
+}
+void SnapScreen::updateCamera(int mx, int my){
+	if(mx < crossRect.w){
+		crossRect.x = crossRect.w;
+	} else if(mx > WINDOW_WIDTH - crossRect.w){
+		crossRect.x = WINDOW_WIDTH - crossRect.w;
+	} else {
+		crossRect.x = mx - (int)(0.5f * crossRect.w);
+	}
+	
+	if(my < crossRect.h){
+		crossRect.y = crossRect.h;
+	} else if(my > WINDOW_HEIGHT - crossRect.h){
+		crossRect.y = WINDOW_HEIGHT - crossRect.h;
+	} else {
+		crossRect.y = my - (int)(0.5f * crossRect.h);
 	}
 }
 
@@ -176,7 +209,8 @@ void SnapScreen::frameStep(unsigned long now) {
 	SDL_RenderCopy(m_context->renderer, background, nullptr, nullptr); //stretch
 	
 	if (spriteVisible) {
-		m_context->render(simpleSprite);
+		//m_context->render(simpleSprite);
+		SDL_RenderCopy(m_context->renderer, sprite, nullptr, &spriteRect);
 	}
 
 	//draw bushes
@@ -200,12 +234,7 @@ void SnapScreen::frameStep(unsigned long now) {
 	SDL_RenderCopy(m_context->renderer, crosshair, nullptr, &crossRect);
 	
 	//detect mouse hits
-	m_userInterface.begin();
-	if(spriteVisible && m_userInterface.mouseOverSprite(simpleSprite)){
-		score += HIT_POINTS;
-	}
 	
-	m_userInterface.end();
 	//copy portion of texture to render target
 	//SDL_RenderCopy(m_context->renderer, timerTexture, nullptr, &timerRect);
 	//m_userInterface.end();

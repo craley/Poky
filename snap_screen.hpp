@@ -27,6 +27,7 @@ public:
     SDL_Texture* imageToTexture(std::string path);
     SDL_Texture* createTransparentTexture(std::string path, SDL_Color *color);
     Uint32 distanceSquared();
+    void updateCamera(int mx, int my);
 private:
     //enum Dir { North, East, South, West };
     //typedef Uint32 Number;
@@ -34,31 +35,43 @@ private:
     
     TTF_Font *font;
     
+    //Timer
     SDL_Texture *timerTexture = nullptr;
     std::string timerText;
     SDL_Rect timerRect;
+    int timerWidth;
+    int timerHeight;
     SDL_Color red = { 255, 0, 0, 0 };
-    
+    //Score
     SDL_Texture *scoreTexture = nullptr;
     std::string scoreText;
     SDL_Rect scoreRect;
+    int scoreWidth;
+    int scoreHeight;
     SDL_Color blue = { 0, 0, 255, 0 };
     
+    //Background
     SDL_Texture *background;
     SDL_Color white = { 0xff, 0xff, 0xff, 0 };
     
+    //Bush
     SDL_Texture *bush;
     SDL_Rect bushes[4];
     int bushWidth = 200;
     int bushHeight = 200;
     
+    //Crosshair
     SDL_Texture *crosshair;
     SDL_Rect crossRect;
+    int crossWidth;
+    int crossHeight;
     
-    Sprite simpleSprite;
+    //Sprite simpleSprite;
+    SDL_Texture *sprite;
     SDL_Rect spriteRect;
     int spriteWidth = 100;
     int spriteHeight = 100;
+    bool spriteVisible;
     
     //Player's score
     int score;
@@ -71,8 +84,6 @@ private:
     //sprite regen timer
     Uint32 generationTime;
     Uint32 pauseTime;
-    
-    bool spriteVisible;
     
     //Mouse pointer
     struct point {
@@ -96,4 +107,7 @@ private:
     vec dir[4];
     int currentDir;
     int currentBush;
+    
+    bool mouseClicked;
+    
 };
